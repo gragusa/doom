@@ -1,0 +1,21 @@
+#+TITLE:   Doom emacs configuration
+#+DATE:    June 25, 2019
+
+
+
+* Table of Contents :TOC_3:noexport:
+- [[#description][Description]]
+- [[#to-install][To install]]
+
+* Description
+This repository contains my configuration files for doom emacs.
+
++ =config.el=
++ =init.el=
++ =packages.el=
++ =snippets=
+
+* To install
+#+BEGIN_SRC shell :eval none :exports code
+git clone https://github.com/gragusa/doom.git ~/.doom.d/
+#+END_SRC
