@@ -31,11 +31,6 @@
         :desc " toggle" "n" #'treemacs)
       )
 
-(map! (:map override
-        :nm "p" #'paste-and-indent-after
-        :nm "P" #'paste-and-indent-before
-        )
-      )
 
 ;; Flyspell
 ;;
@@ -79,70 +74,43 @@
    (define-key org-mode-map
      (kbd "<f5>") 'org-beamer-export-to-pdf)))
 
-
-
-;; (defun sp-org-point-after-curlybracket-p (id action _context)
-;;   "Return t if point follows a curly bracket, nil otherwise.
-;; This predicate is only tested on \"insert\" action.
-;; ID, ACTION, CONTEXT."
-;;   (when (eq action 'insert)
-;;     (let ((trigger (sp-get-pair id :trigger)))
-;;       (looking-back (concat "\\}" (regexp-quote (if trigger trigger id))) nil))))
-
-
-;; Disable smartparens in org-mode when
+;; Partially disable smartparens in org-mode
 (after! (:and org smartparens)
-
 (sp-with-modes 'org-mode
+  (sp-local-pair "*" "*" :unless '(:add sp-in-code-p sp-point-before-word-p sp-in-math-p sp-point-after-word-p +org-sp-point-at-bol-p))
   (sp-local-pair "_" "_" :unless '(:add sp-in-code-p sp-point-before-word-p sp-in-math-p sp-point-after-word-p +org-sp-point-at-bol-p))
-    (sp-local-pair "=" "=" :unless '(:add sp-in-code-p sp-point-before-word-p sp-in-math-p sp-point-after-word-p +org-sp-point-at-bol-p))))
+  (sp-local-pair "=" "=" :unless '(:add sp-in-code-p sp-point-before-word-p sp-in-math-p sp-point-after-word-p +org-sp-point-at-bol-p)))
+)
+
+(after! (:and org recentf)
+    ;; Don't clobber recentf with agenda files
+    (defun +org-is-agenda-file (filename)
+      (cl-find (file-truename filename) org-agenda-files
+               :key #'file-truename
+               :test #'equal))
+    (add-to-list 'recentf-exclude #'+org-is-agenda-file))
 
 
+;; mode-map
+;;
+;;
 
-;; Some function
-(defun undo-collapse-begin (marker)
-  "Mark the beginning of a collapsible undo block.
-This must be followed with a call to undo-collapse-end with a marker
-eq to this one."
-  (push marker buffer-undo-list))
-
-(defun undo-collapse-end (marker)
-  "Collapse undo history until a matching marker."
-  (cond
-    ((eq (car buffer-undo-list) marker)
-     (setq buffer-undo-list (cdr buffer-undo-list)))
-    (t
-     (let ((l buffer-undo-list))
-       (while (not (eq (cadr l) marker))
-         (cond
-           ((null (cdr l))
-            (error "undo-collapse-end with no matching marker"))
-           ((eq (cadr l) nil)
-            (setf (cdr l) (cddr l)))
-           (t (setq l (cdr l)))))
-       ;; remove the marker
-       (setf (cdr l) (cddr l))))))
-
- (defmacro with-undo-collapse (&rest body)
-  "Execute body, then collapse any resulting undo boundaries."
-  (declare (indent 0))
-  (let ((marker (list 'apply 'identity nil)) ; build a fresh list
-        (buffer-var (make-symbol "buffer")))
-    `(let ((,buffer-var (current-buffer)))
-       (unwind-protect
-            (progn
-              (undo-collapse-begin ',marker)
-              ,@body)
-         (with-current-buffer ,buffer-var
-           (undo-collapse-end ',marker))))))
-
-(defun paste-and-indent-after ()
+(defun gragusa/org-babel-indent-src-bock ()
   (interactive)
-  (with-undo-collapse
-    (evil-paste-after 1)
-    (evil-indent (evil-get-marker ?\[) (evil-get-marker ?\]))))
-(defun paste-and-indent-before ()
-  (interactive)
-  (with-undo-collapse
-    (evil-paste-before 1)
-    (evil-indent (evil-get-marker ?\[) (evil-get-marker ?\]))))
+  (org-babel-mark-block)
+  (indent-region (region-beginning) (region-end))
+  )
+
+(after! org
+(map! :map org-mode-map
+      :leader
+      (:prefix ("c" . "code")
+        :desc "execute src blk"       "c" #'org-babel-execute-src-block
+        :desc "indent  src blk"       "i" #'gragusa/org-babel-indent-src-bock
+        :desc "execute src blk (asy)" "a" #'ob-async-org-babel-execute-src-block
+        )
+      )
+(map! :map evil-org-mode-map
+      :n "gr" #'org-babel-execute-src-block
+      )
+)
