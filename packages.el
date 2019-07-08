@@ -12,3 +12,4 @@
 (package! exec-path-from-shell)
 (package! pyenv-mode)
 (package! mustache)
+(package! julia-repl)
