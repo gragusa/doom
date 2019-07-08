@@ -110,7 +110,68 @@
         :desc "execute src blk (asy)" "a" #'ob-async-org-babel-execute-src-block
         )
       )
+
 (map! :map evil-org-mode-map
       :n "gr" #'org-babel-execute-src-block
       )
 )
+
+;; (after! python
+;;   (map! :map python-mode-map
+;;         (
+;;          :desc "send region" "<C-M-return>" #'python-shell-send-region)
+;;          :desc "send region" "<M-s-return>" #'python-shell-send-region)
+;;         )
+
+
+(after! python
+  (setq elpy-syntax-check-command "epylint"
+        elpy-modules '(elpy-module-company
+                       elpy-module-eldoc
+                       elpy-module-pyvenv
+                       elpy-module-yasnippet
+                       elpy-module-sane-defaults))
+  (elpy-enable)
+  (setq python-shell-interpreter "python"
+        python-shell-interpreter-args "-i")
+
+  (defun elpy--region-without-indentation (beg end)
+  "Return the current region as a string, but without indentation."
+  (let ((region (buffer-substring beg end))
+        (indent-level nil))
+    (catch 'return
+      (with-temp-buffer
+        (insert region)
+        (goto-char (point-min))
+        (while (< (point) (point-max))
+          (cond
+           ((and (not indent-level)
+                 (not (looking-at "[ \t]*$")))
+            (setq indent-level (current-indentation)))
+           ((and indent-level
+                 (not (looking-at "[ \t]*$"))
+                 (< (current-indentation)
+                    indent-level))
+            (error "Can't adjust indentation, consecutive lines indented less than starting line")))
+          (forward-line))
+        (indent-rigidly (point-min)
+                        (point-max)
+                        (- indent-level))
+        (buffer-string)))))
+
+  (defun gragusa/send-line-or-region ()
+    (interactive)
+    (if (region-active-p)
+        (call-interactively 'elpy-shell-send-region-or-buffer)
+      (python-shell-send-string (elpy--region-without-indentation
+                                 (line-beginning-position)
+                                 (line-end-position)))))
+  (setq split-height-threshold nil)
+  (setq split-width-threshold 160)
+
+  (map! :map elpy-mode-map
+        (
+         :desc "send region" "<C-M-return>" #'gragusa/send-line-or-region
+         :desc "send region" "<M-s-return>" #'elpy-shell-send-defun
+         )
+        ))
