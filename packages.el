@@ -13,3 +13,4 @@
 (package! pyenv-mode)
 (package! mustache)
 (package! julia-repl)
+(package! elpy)
