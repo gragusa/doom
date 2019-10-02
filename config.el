@@ -5,7 +5,7 @@
 
 
 ;; Use fira font
-(setq doom-font (font-spec :family "Fira Code" :size 14))
+(setq doom-font (font-spec :family "Fira Code" :size 18))
 
 ;; ;; Useful key
 (global-set-key [f1] 'replace-string)
@@ -31,6 +31,10 @@
         :desc " toggle" "n" #'treemacs)
       )
 
+(after! julia-repl
+       (add-to-list 'load-path path-to-julia-repl)
+       (add-hook 'julia-mode-hook 'julia-repl-mode)
+)
 
 ;; Flyspell
 ;;
@@ -114,6 +118,21 @@
 (map! :map evil-org-mode-map
       :n "gr" #'org-babel-execute-src-block
       )
+
+(setq inferior-julia-program-name "/usr/local/bin/julia")
+;;(setq inferior-STA-program-name "/usr/local/stata")
+(org-babel-do-load-languages
+ 'org-babel-load-languages
+ '((emacs-lisp . t)
+   (dot . t)
+   (latex . t)
+   (matlab . t)
+   (maxima . t)
+   (R . t)
+   ;;(stata . t)
+   (julia . t)
+   (python . t)
+   (jupyter . t)))
 )
 
 ;; (after! python
