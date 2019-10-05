@@ -2,7 +2,15 @@
 
 ;; Place your private configuration here
 
+;; iTerm send string to
+;; This should only work on OSX
+(when (eq system-type 'darwin)
+  (load-file "~/.doom.d/iterm.elc")
+  )
 
+(when (eq system-type 'gnu/linux)
+  (load-file "~/.doom.d/turnip.elc")
+  )
 
 ;; Use fira font
 (setq doom-font (font-spec :family "Fira Code" :size 18))
@@ -31,9 +39,19 @@
         :desc " toggle" "n" #'treemacs)
       )
 
-(after! julia-repl
-       (add-to-list 'load-path path-to-julia-repl)
-       (add-hook 'julia-mode-hook 'julia-repl-mode)
+(after! julia-mode
+  ;(setq path-to-julia-repl "/usr/local/bin/julia")
+  ;(add-to-list 'load-path path-to-julia-repl)
+  ;;(add-hook 'julia-mode-hook 'julia-repl-mode)
+ (when (eq system-type 'darwin)
+  (define-key julia-mode-map
+     (kbd "M-RET") 'iterm-send-text)
+  )
+
+ (when (eq system-type 'gnu/linux)
+   (define-key julia-mode-map
+     (kbd "M-RET") 'gragusa/turnip-send-region-or-line)
+  )
 )
 
 ;; Flyspell
@@ -106,34 +124,34 @@
   )
 
 (after! org
-(map! :map org-mode-map
-      :leader
-      (:prefix ("c" . "code")
-        :desc "execute src blk"       "c" #'org-babel-execute-src-block
-        :desc "indent  src blk"       "i" #'gragusa/org-babel-indent-src-bock
-        :desc "execute src blk (asy)" "a" #'ob-async-org-babel-execute-src-block
+  (map! :map org-mode-map
+        :leader
+        (:prefix ("c" . "code")
+          :desc "execute src blk"       "c" #'org-babel-execute-src-block
+          :desc "indent  src blk"       "i" #'gragusa/org-babel-indent-src-bock
+          :desc "execute src blk (asy)" "a" #'ob-async-org-babel-execute-src-block
+          )
         )
-      )
 
-(map! :map evil-org-mode-map
-      :n "gr" #'org-babel-execute-src-block
-      )
+  (map! :map evil-org-mode-map
+        :n "gr" #'org-babel-execute-src-block
+        )
 
-(setq inferior-julia-program-name "/usr/local/bin/julia")
-;;(setq inferior-STA-program-name "/usr/local/stata")
-(org-babel-do-load-languages
- 'org-babel-load-languages
- '((emacs-lisp . t)
-   (dot . t)
-   (latex . t)
-   (matlab . t)
-   (maxima . t)
-   (R . t)
-   ;;(stata . t)
-   (julia . t)
-   (python . t)
-   (jupyter . t)))
-)
+  (setq inferior-julia-program-name "/usr/local/bin/julia")
+  ;;(setq inferior-STA-program-name "/usr/local/stata")
+  (org-babel-do-load-languages
+   'org-babel-load-languages
+   '((emacs-lisp . t)
+     (dot . t)
+     (latex . t)
+     (matlab . t)
+     (maxima . t)
+     (R . t)
+     ;;(stata . t)
+     (julia . t)
+     (python . t)
+     (jupyter . t)))
+  )
 
 ;; (after! python
 ;;   (map! :map python-mode-map
