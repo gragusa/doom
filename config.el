@@ -1,6 +1,85 @@
 ;; ;;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
 
-;; Place your private configuration here
+
+(setq
+ ;;doom-font (font-spec :family "SF Mono" :size 20)
+ ;;doom-big-font (font-spec :family "SF Mono" :size 36)
+ ;;doom-variable-pitch-font (font-spec :family "Avenir Next" :size 18)
+ org-agenda-skip-scheduled-if-done t
+ projectile-project-search-path '("~/Dropbox/repositories/")
+ dired-dwim-target t
+ org-ellipsis " ▾ "
+ org-bullets-bullet-list '("·")
+ org-tags-column -80
+ org-directory "~/Dropbox/Org/"
+ org-default-notes-file "~/Dropbox/Org/inbox.org"
+ org-agenda-files (ignore-errors (directory-files +org-dir t "\\.org$" t))
+ org-log-done 'time
+ org-refile-targets (quote ((nil :maxlevel . 1)))
+ org-capture-templates '(("x" "Note" entry
+                          (file+olp+datetree "journal.org")
+                          "**** [ ] %U %?" :prepend t :kill-buffer t)
+                         ("t" "Task" entry
+                          (file+headline "tasks.org" "Inbox")
+                          "* [ ] %?\n%i" :prepend t :kill-buffer t))
+ ;;+doom-dashboard-banner-file (expand-file-name "logo.png" doom-private-dir)
+ +org-capture-todo-file "tasks.org"
+ org-super-agenda-groups '((:name "Today"
+                                  :time-grid t
+                                  :scheduled today)
+                           (:name "Due today"
+                                  :deadline today)
+                           (:name "Important"
+                                  :priority "A")
+                           (:name "Overdue"
+                                  :deadline past)
+                           (:name "Due soon"
+                                  :deadline future)
+                           (:name "Big Outcomes"
+                                  :tag "bo")))
+
+(after! org
+  (set-face-attribute 'org-link nil
+                      :weight 'normal
+                      :foreground "cyan"
+                      :underline '(:color "dark cyan" :line-width 2 :style line)
+                      :background nil)
+  (set-face-attribute 'org-code nil
+                      :foreground "#a9a1e1"
+                      :background nil)
+  (set-face-attribute 'org-date nil
+                      :foreground "#5B6268"
+                      :background nil)
+  (set-face-attribute 'org-level-1 nil
+                      :foreground "steelblue2"
+                      :background nil
+                      :height 1.05
+                      :weight 'normal)
+  (set-face-attribute 'org-level-2 nil
+                      :foreground "slategray2"
+                      :background nil
+                      :height 1.02
+                      :weight 'normal)
+  (set-face-attribute 'org-level-3 nil
+                      :foreground "SkyBlue2"
+                      :background nil
+                      :height 1.01
+                      :weight 'normal)
+  (set-face-attribute 'org-level-4 nil
+                      :foreground "DodgerBlue2"
+                      :background nil
+                      :height 1.0
+                      :weight 'normal)
+  (set-face-attribute 'org-level-5 nil
+                      :weight 'normal)
+  (set-face-attribute 'org-level-6 nil
+                      :weight 'normal)
+  (set-face-attribute 'org-document-title nil
+                      :foreground "SlateGray1"
+                      :background nil
+                      :height 1.1
+                      :weight 'bold)
+  (setq org-fancy-priorities-list '("⚡" "⬆" "⬇" "☕")))
 
 ;; iTerm send string to
 ;; This should only work on OSX
@@ -16,6 +95,9 @@
 (setq doom-font (font-spec :family "Fira Code" :size 18))
 
 ;; ;; Useful key
+;;
+(map! :ne "M-/" #'comment-or-uncomment-region)
+
 (global-set-key [f1] 'replace-string)
 (global-set-key [f2] 'split-window-horizontally)
 (global-set-key [f3] 'split-window-vertically)
@@ -82,14 +164,6 @@
            ))
    ))
 
-;; ;; Another example would be to translate strike through text to \structure{strike through text} with the following filter.
-;; ;; from: https://orgmode.org/worg/exporters/beamer/ox-beamer.html
-;; (defun my-beamer-structure (contents backend info)
-;;   (when (eq backend 'beamer)
-;;     (replace-regexp-in-string "\\`\\\\[A-Za-z0-9]+" "\\\\structure" contents)))
-
-;; (add-to-list 'org-export-filter-strike-through-functions 'my-beamer-structure)
-
 (add-hook
  'org-beamer-mode-hook
  (lambda()
@@ -138,7 +212,7 @@
         )
 
   (setq inferior-julia-program-name "/usr/local/bin/julia")
-  ;;(setq inferior-STA-program-name "/usr/local/stata")
+  (setq inferior-STA-program-name "/usr/local/bin/stata")
   (org-babel-do-load-languages
    'org-babel-load-languages
    '((emacs-lisp . t)
@@ -147,19 +221,11 @@
      (matlab . t)
      (maxima . t)
      (R . t)
-     ;;(stata . t)
+     (stata . t)
      (julia . t)
      (python . t)
      (jupyter . t)))
   )
-
-;; (after! python
-;;   (map! :map python-mode-map
-;;         (
-;;          :desc "send region" "<C-M-return>" #'python-shell-send-region)
-;;          :desc "send region" "<M-s-return>" #'python-shell-send-region)
-;;         )
-
 
 (after! python
   (setq elpy-syntax-check-command "epylint"
@@ -208,7 +274,7 @@
 
   (map! :map elpy-mode-map
         (
-         :desc "send region" "<C-M-return>" #'gragusa/send-line-or-region
+         :desc "send region" "<M-return>" #'gragusa/send-line-or-region
          :desc "send region" "<M-s-return>" #'elpy-shell-send-defun
          )
         ))

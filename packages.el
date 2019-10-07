@@ -13,5 +13,15 @@
 (package! pyenv-mode)
 (package! mustache)
 (package! julia-repl)
-;;(package! elpy)
+(package! elpy)
 (package! turnip)
+
+
+(package! org-fancy-priorities)
+(package! org-super-agenda)
+(package! move-text)
+(package! origami)
+(package! deadgrep)
+(package! sql-indent)
+;;(package! ascii-art-to-unicode)
+;;(package! wakatime-mode)
