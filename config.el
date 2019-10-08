@@ -8,14 +8,22 @@
  org-agenda-skip-scheduled-if-done t
  projectile-project-search-path '("~/Dropbox/repositories/")
  dired-dwim-target t
- org-ellipsis " ▾ "
- org-bullets-bullet-list '("·")
+ org-ellipsis "…"
+ org-bullets-bullet-list '("∴")
  org-tags-column -80
  org-directory "~/Dropbox/Org/"
  org-default-notes-file "~/Dropbox/Org/inbox.org"
  org-agenda-files (ignore-errors (directory-files +org-dir t "\\.org$" t))
  org-log-done 'time
  org-refile-targets (quote ((nil :maxlevel . 1)))
+ org-startup-indented t
+ org-hide-emphasis-markers t
+ org-fontify-done-headline t
+ org-hide-leading-stars t
+ org-pretty-entities t
+ org-odd-levels-only t
+ org-startup-indented t
+ org-src-tab-acts-natively t
  org-capture-templates '(("x" "Note" entry
                           (file+olp+datetree "journal.org")
                           "**** [ ] %U %?" :prepend t :kill-buffer t)
@@ -83,16 +91,28 @@
 
 ;; iTerm send string to
 ;; This should only work on OSX
-(when (eq system-type 'darwin)
-  (load-file "~/.doom.d/iterm.elc")
-  )
+;; (when (eq system-type 'darwin)
+;;   (load-file "~/.doom.d/iterm.elc")
+;;   )
+
+;; (when (eq system-type 'gnu/linux)
+;;   (load-file "~/.doom.d/turnip.elc")
+;;   )
 
 (when (eq system-type 'gnu/linux)
   (load-file "~/.doom.d/turnip.elc")
+  (setq x-meta-keysym 'super)
+  (setq x-super-keysym 'meta)
+  (global-set-key [(C-s-right)] 'windmove-right)
+  (global-set-key [(C-s-left)] 'windmove-left)
+
+  (global-set-key [(C-s-up)] 'windmove-up)
+  (global-set-key [(C-s-down)] 'windmove-down)
   )
 
 ;; Use fira font
-(setq doom-font (font-spec :family "Fira Code" :size 18))
+(setq doom-font (font-spec :family "Fira Code" :size 22))
+
 
 ;; ;; Useful key
 ;;
@@ -103,17 +123,12 @@
 (global-set-key [f3] 'split-window-vertically)
 (global-set-key [f4] 'delete-window)
 
-(global-set-key [(C-s-right)] 'windmove-right)
-(global-set-key [(C-s-left)] 'windmove-left)
-
-(global-set-key [(C-s-up)] 'windmove-up)
-(global-set-key [(C-s-down)] 'windmove-down)
 
 (global-set-key [home] 'beginning-of-line)
 (global-set-key [end] 'end-of-line)
 
-(global-set-key (kbd "C-s-,") 'previous-buffer)
-(global-set-key (kbd "C-s-.") 'next-buffer)
+;(global-set-key (kbd "C-s-,") 'previous-buffer)
+;(global-set-key (kbd "C-s-.") 'next-buffer)
 
 ;;Additional keybinding
 (map! :leader
@@ -122,18 +137,35 @@
       )
 
 (after! julia-mode
-  ;(setq path-to-julia-repl "/usr/local/bin/julia")
-  ;(add-to-list 'load-path path-to-julia-repl)
-  ;;(add-hook 'julia-mode-hook 'julia-repl-mode)
- (when (eq system-type 'darwin)
-  (define-key julia-mode-map
-     (kbd "M-RET") 'iterm-send-text)
-  )
+  (setq path-to-julia-repl "/usr/local/bin/julia")
+;;  (add-to-list 'load-path l)
+  (add-hook 'julia-mode-hook #'julia-repl-mode)
 
- (when (eq system-type 'gnu/linux)
-   (define-key julia-mode-map
-     (kbd "M-RET") 'gragusa/turnip-send-region-or-line)
-  )
+)
+
+(after! julia-repl
+
+   (defun julia-repl-send-line-and-back ()
+     (interactive)
+    (let ((win (selected-window)))
+      (julia-repl-send-line)
+      (select-window win)
+      (forward-line 1)
+      )
+    )
+ (defun julia-repl-send-line-or-region-and-back ()
+     (interactive)
+    (let ((win (selected-window)))
+      (julia-repl-send-line-or-region)
+      (select-window win)
+      (forward-line 1)
+      )
+    )
+
+  (define-key julia-repl-mode-map
+    (kbd "<s-return>") #'julia-repl-send-region-or-line)
+  (define-key julia-repl-mode-map
+    (kbd "<M-s-return>") #'julia-repl-includet-buffer)
 )
 
 ;; Flyspell
@@ -143,9 +175,28 @@
 
 ;; Org-Mode
 ;;
-(add-hook
- 'org-mode-hook
+;;
+;;
+;; The next setting prettifies src blocks. Inspired by a comment in i use markdown rather than org-mode for my notes : emacs I looked at the now builtin mode prettify-symbols-mode.
+(setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "†")
+                                       ("#+END_SRC" . "†")
+                                       ("#+begin_src" . "†")
+                                       ("#+end_src" . "†")
+                                       (">=" . "≥")
+                                       ("=>" . "⇨")))
+(setq prettify-symbols-unprettify-at-point 'right-edge)
+(add-hook 'org-mode-hook 'prettify-symbols-mode)
+
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([-]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+(font-lock-add-keywords 'org-mode
+                        '(("^ *\\([+]\\) "
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
+
+(add-hook 'org-mode-hook
  (lambda()
+   (visual-line-mode)
    (add-to-list 'org-latex-packages-alist '("" "minted"))
    (setq org-export-allow-bind-keywords t
          org-latex-listings 'minted)
@@ -163,6 +214,9 @@
            ("mathescape" "true")
            ))
    ))
+
+(when (member "Symbola" (font-family-list))
+  (set-fontset-font t 'unicode "Symbola" nil 'prepend))
 
 (add-hook
  'org-beamer-mode-hook
@@ -225,6 +279,9 @@
      (julia . t)
      (python . t)
      (jupyter . t)))
+
+
+
   )
 
 (after! python
@@ -278,3 +335,8 @@
          :desc "send region" "<M-s-return>" #'elpy-shell-send-defun
          )
         ))
+
+
+(set-popup-rule! "^\\*Org Agenda" :side 'bottom :size 0.90 :select t :ttl nil)
+(set-popup-rule! "^CAPTURE.*\\.org$" :side 'bottom :size 0.90 :select t :ttl nil)
+(set-popup-rule! "^\\*Julia" :side 'right :size 0.50 :select t :ttl nil)
