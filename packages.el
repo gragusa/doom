@@ -23,5 +23,6 @@
 (package! origami)
 (package! deadgrep)
 (package! sql-indent)
+(package! eterm-256color)
 ;;(package! ascii-art-to-unicode)
 ;;(package! wakatime-mode)
