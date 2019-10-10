@@ -24,6 +24,8 @@
  org-odd-levels-only t
  org-startup-indented t
  org-src-tab-acts-natively t
+ pdf-sync-backward-display-action t
+ pdf-sync-forward-display-action t
  org-capture-templates '(("x" "Note" entry
                           (file+olp+datetree "journal.org")
                           "**** [ ] %U %?" :prepend t :kill-buffer t)
@@ -153,19 +155,45 @@
       (forward-line 1)
       )
     )
- (defun julia-repl-send-line-or-region-and-back ()
+ (defun julia-repl-send-region-or-line-and-back ()
      (interactive)
     (let ((win (selected-window)))
-      (julia-repl-send-line-or-region)
+      (julia-repl-send-region-or-line)
       (select-window win)
       (forward-line 1)
       )
     )
+ (defun julia-repl-includet-buffer-and-back ()
+     (interactive)
+    (let ((win (selected-window)))
+      (julia-repl-includet-buffer)
+      (select-window win)
+      ;;(forward-line 1)
+      )
+    )
+ (defun julia-repl-activate-parent-and-back (arg)
+     (interactive "P")
+     (let ((win (selected-window)))
+       (julia-repl-activate-parent arg)
+       (select-window win)
+       ;;(forward-line 1)
+      )
+    )
 
+;; To make these commands to work I had to comment out stuff in emacs.d/config.el
+;;
   (define-key julia-repl-mode-map
-    (kbd "<s-return>") #'julia-repl-send-region-or-line)
+    (kbd "<s-return>") #'julia-repl-send-region-or-line-and-back)
   (define-key julia-repl-mode-map
-    (kbd "<M-s-return>") #'julia-repl-includet-buffer)
+    (kbd "<M-return>") #'julia-repl-send-region-or-line-and-back)
+  (define-key julia-repl-mode-map
+    (kbd "<M-s-return>") #'julia-repl-includet-buffer-and-back)
+  (define-key julia-repl-mode-map
+    (kbd "C-c C-t") #'julia-repl-includet-buffer-and-back)
+  (define-key julia-repl-mode-map
+    (kbd "C-c C-a") #'julia-repl-activate-parent-and-back)
+
+
 )
 
 ;; Flyspell
@@ -178,10 +206,10 @@
 ;;
 ;;
 ;; The next setting prettifies src blocks. Inspired by a comment in i use markdown rather than org-mode for my notes : emacs I looked at the now builtin mode prettify-symbols-mode.
-(setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "†")
-                                       ("#+END_SRC" . "†")
-                                       ("#+begin_src" . "†")
-                                       ("#+end_src" . "†")
+(setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "⋖")
+                                       ("#+END_SRC" . "⋗")
+                                       ("#+begin_src" . "⋖")
+                                       ("#+end_src" . "⋗")
                                        (">=" . "≥")
                                        ("=>" . "⇨")))
 (setq prettify-symbols-unprettify-at-point 'right-edge)
@@ -189,10 +217,10 @@
 
 (font-lock-add-keywords 'org-mode
                         '(("^ *\\([-]\\) "
-                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "•"))))))
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "∶"))))))
 (font-lock-add-keywords 'org-mode
                         '(("^ *\\([+]\\) "
-                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "◦"))))))
+                           (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "∶"))))))
 
 (add-hook 'org-mode-hook
  (lambda()
@@ -340,3 +368,5 @@
 (set-popup-rule! "^\\*Org Agenda" :side 'bottom :size 0.90 :select t :ttl nil)
 (set-popup-rule! "^CAPTURE.*\\.org$" :side 'bottom :size 0.90 :select t :ttl nil)
 (set-popup-rule! "^\\*Julia" :side 'right :size 0.50 :select t :ttl nil)
+
+(add-hook 'term-mode-hook #'eterm-256color-mode)
