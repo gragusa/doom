@@ -107,13 +107,24 @@
   (setq x-super-keysym 'meta)
   (global-set-key [(C-s-right)] 'windmove-right)
   (global-set-key [(C-s-left)] 'windmove-left)
-
   (global-set-key [(C-s-up)] 'windmove-up)
   (global-set-key [(C-s-down)] 'windmove-down)
   )
 
+(when (eq system-type 'darwin)
+;;  (load-file "~/.doom.d/turnip.elc")
+;;  (setq x-meta-keysym 'super)
+;;  (setq x-super-keysym 'meta)
+  (global-set-key [(M-s-right)] 'windmove-right)
+  (global-set-key [(M-s-left)] 'windmove-left)
+  (global-set-key [(M-s-up)] 'windmove-up)
+  (global-set-key [(M-s-down)] 'windmove-down)
+  )
+
+
 ;; Use fira font
 (setq doom-font (font-spec :family "Fira Code" :size 22))
+
 
 
 ;; ;; Useful key
@@ -243,8 +254,8 @@
            ))
    ))
 
-(when (member "Symbola" (font-family-list))
-  (set-fontset-font t 'unicode "Symbola" nil 'prepend))
+;; (when (member "Symbola" (font-family-list))
+;;   (set-fontset-font t 'unicode "Symbola" nil 'prepend))
 
 (add-hook
  'org-beamer-mode-hook
