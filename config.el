@@ -24,6 +24,9 @@
  org-odd-levels-only t
  org-startup-indented t
  org-src-tab-acts-natively t
+ ;; Fix src code block indentation
+ org-src-preserve-indentation nil
+ org-edit-src-content-indentation 0
  pdf-sync-backward-display-action t
  pdf-sync-forward-display-action t
  org-capture-templates '(("x" "Note" entry
