@@ -108,20 +108,22 @@
   (load-file "~/.doom.d/turnip.elc")
   (setq x-meta-keysym 'super)
   (setq x-super-keysym 'meta)
-  (global-set-key [(C-s-right)] 'windmove-right)
-  (global-set-key [(C-s-left)] 'windmove-left)
-  (global-set-key [(C-s-up)] 'windmove-up)
-  (global-set-key [(C-s-down)] 'windmove-down)
-  )
-
-(when (eq system-type 'darwin)
-;;  (load-file "~/.doom.d/turnip.elc")
-;;  (setq x-meta-keysym 'super)
-;;  (setq x-super-keysym 'meta)
   (global-set-key [(M-s-right)] 'windmove-right)
   (global-set-key [(M-s-left)] 'windmove-left)
   (global-set-key [(M-s-up)] 'windmove-up)
   (global-set-key [(M-s-down)] 'windmove-down)
+  (map! :ne "M-/" #'comment-or-uncomment-region)
+  )
+
+(when (eq system-type 'darwin)
+  ;;  (load-file "~/.doom.d/turnip.elc")
+  ;;  (setq x-meta-keysym 'super)
+  ;;  (setq x-super-keysym 'meta)
+  (global-set-key [(M-s-right)] 'windmove-right)
+  (global-set-key [(M-s-left)] 'windmove-left)
+  (global-set-key [(M-s-up)] 'windmove-up)
+  (global-set-key [(M-s-down)] 'windmove-down)
+  (map! :ne "s-/" #'comment-or-uncomment-region)
   )
 
 
@@ -131,8 +133,7 @@
 
 
 ;; ;; Useful key
-;;
-(map! :ne "M-/" #'comment-or-uncomment-region)
+
 
 (global-set-key [f1] 'replace-string)
 (global-set-key [f2] 'split-window-horizontally)
@@ -143,8 +144,6 @@
 (global-set-key [home] 'beginning-of-line)
 (global-set-key [end] 'end-of-line)
 
-;(global-set-key (kbd "C-s-,") 'previous-buffer)
-;(global-set-key (kbd "C-s-.") 'next-buffer)
 
 ;;Additional keybinding
 (map! :leader
