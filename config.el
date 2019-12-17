@@ -22,7 +22,6 @@
  org-hide-leading-stars t
  org-pretty-entities t
  org-odd-levels-only t
- org-startup-indented t
  org-src-tab-acts-natively t
  ;; Fix src code block indentation
  org-src-preserve-indentation nil
@@ -234,26 +233,30 @@
 (font-lock-add-keywords 'org-mode
                         '(("^ *\\([+]\\) "
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "∶"))))))
-
 (add-hook 'org-mode-hook
- (lambda()
-   (visual-line-mode)
-   (add-to-list 'org-latex-packages-alist '("" "minted"))
-   (setq org-export-allow-bind-keywords t
-         org-latex-listings 'minted)
-   (setq org-latex-pdf-process
-         '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
-           "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
-
-   (setq org-latex-minted-options
-         '(("fontsize" "\\scriptsize")
-           ("obeytabs" "true")
-           ("bgcolor" "gray!10")
-           ("frame" "none")
-           ("linenos" "true")
-           ("mathescape" "true")
-           ))
+          (lambda()
+            (require 'ox-latex)
+            (visual-line-mode)
+            (add-to-list 'org-latex-packages-alist '("" "minted"))
+            (setq org-export-allow-bind-keywords t
+                  org-latex-listings 'minted)
+            (setq org-latex-pdf-process
+                  '("pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                    "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+                    "pdflatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
+            (add-to-list 'org-latex-classes
+                         '("foils"
+                           "\\documentclass{foils}"
+                           ("\\foilhead[-1cm]{%s}" . "\\foilhead[-1cm]*(%s)"))
+                         )
+            (setq org-latex-minted-options
+                  '(("fontsize" "\\scriptsize")
+                    ("obeytabs" "true")
+                    ("bgcolor" "gray!10")
+                    ("frame" "none")
+                    ("linenos" "true")
+                    ("mathescape" "true")
+                    ))
    ))
 
 ;; (when (member "Symbola" (font-family-list))
@@ -383,3 +386,56 @@
 (set-popup-rule! "^\\*Julia" :side 'right :size 0.50 :select t :ttl nil)
 
 (add-hook 'term-mode-hook #'eterm-256color-mode)
+
+
+;; LanguageServer.jl
+;;
+(require 'cl-generic)
+
+(defcustom julia-default-depot ""
+  "The default depot path, used if `JULIA_DEPOT_PATH' is unset"
+  :type 'string
+  :group 'julia-config)
+
+(defcustom julia-default-environment "~/.julia/environment/v1.3"
+  "The default julia environment"
+  :type 'string
+  :group 'julia-config)
+
+(defun julia/get-depot-path ()
+  (if-let (env-depot (getenv "JULIA_DEPOT_PATH"))
+      (expand-file-name env-depot)
+    (if (equal julia-default-depot "")
+        julia-default-depot
+      (expand-file-name julia-default-depot))))
+
+(defun julia/get-environment (dir)
+  (expand-file-name (if dir (or (locate-dominating-file dir "JuliaProject.toml")
+                                (locate-dominating-file dir "Project.toml")
+                                julia-default-environment)
+                      julia-default-environment)))
+
+;; Make project.el aware of Julia projects
+(defun julia/project-try (dir)
+  (let ((root (or (locate-dominating-file dir "JuliaProject.toml")
+                 (locate-dominating-file dir "Project.toml"))))
+    (and root (cons 'julia root))))
+(add-hook 'project-find-functions 'julia/project-try)
+
+(cl-defmethod project-roots ((project (head julia)))
+  (list (cdr project)))
+
+(defun julia/get-language-server-invocation (interactive)
+  `("julia"
+    ,(expand-file-name "~/.doom.d/eglot-julia/eglot.jl")
+    ,(julia/get-environment (buffer-file-name))
+    ,(julia/get-depot-path)))
+
+;; Setup eglot with julia
+(with-eval-after-load 'eglot
+  (setq eglot-connect-timeout 100)
+  (add-to-list 'eglot-server-programs
+         ;; function instead of strings to find project dir at runtime
+         '(julia-mode . julia/get-language-server-invocation))
+  (add-hook 'julia-mode-hook 'eglot-ensure))
+
