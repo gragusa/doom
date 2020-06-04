@@ -24,6 +24,6 @@
 (package! deadgrep)
 (package! sql-indent)
 (package! eterm-256color)
-(package! eglot)
+(package! eglot-jl)
 ;;(package! ascii-art-to-unicode)
 ;;(package! wakatime-mode)
