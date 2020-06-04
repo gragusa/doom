@@ -20,7 +20,7 @@
  org-hide-emphasis-markers t
  org-fontify-done-headline t
  org-hide-leading-stars t
- org-pretty-entities t
+ ;;org-pretty-entities nil
  org-odd-levels-only t
  org-src-tab-acts-natively t
  ;; Fix src code block indentation
@@ -104,14 +104,23 @@
 ;;   )
 
 (when (eq system-type 'gnu/linux)
-  (load-file "~/.doom.d/turnip.elc")
-  (setq x-meta-keysym 'super)
+;;  (load-file "~/.doom.d/turnip.elc")
+  (setq x-ctrl-keysym 'super)
+  (setq x-meta-keysym 'ctrl)
   (setq x-super-keysym 'meta)
   (global-set-key [(M-s-right)] 'windmove-right)
   (global-set-key [(M-s-left)] 'windmove-left)
   (global-set-key [(M-s-up)] 'windmove-up)
   (global-set-key [(M-s-down)] 'windmove-down)
-  (map! :ne "M-/" #'comment-or-uncomment-region)
+  (map! :nei "s-x" #'execute-extended-command)
+  (map! :nei "M-/" #'comment-or-uncomment-region)
+  (map! :nei "s-/" #'comment-or-uncomment-region)
+  (map! :nei "s-c" #'kill-ring-save)
+  (map! :nei "s-v" #'yank)
+;;  (map! :ne "s-x" #'kill-region)
+  (map! :nei "s-z" #'undo-tree-undo)
+  (map! :nei "S-z" #'undo-tree-undo)
+  (map! :nei "s-s" #'save-buffer)
   )
 
 (when (eq system-type 'darwin)
@@ -164,7 +173,7 @@
     (let ((win (selected-window)))
       (julia-repl-send-line)
       (select-window win)
-      (forward-line 1)
+      ;;(forward-line 1)
       )
     )
  (defun julia-repl-send-region-or-line-and-back ()
@@ -172,7 +181,7 @@
     (let ((win (selected-window)))
       (julia-repl-send-region-or-line)
       (select-window win)
-      (forward-line 1)
+      ;;(forward-line 1)
       )
     )
  (defun julia-repl-includet-buffer-and-back ()
@@ -192,18 +201,18 @@
       )
     )
 
-;; To make these commands to work I had to comment out stuff in emacs.d/config.el
-;;
-  (define-key julia-repl-mode-map
-    (kbd "<s-return>") #'julia-repl-send-region-or-line-and-back)
-  (define-key julia-repl-mode-map
-    (kbd "<M-return>") #'julia-repl-send-region-or-line-and-back)
-  (define-key julia-repl-mode-map
-    (kbd "<M-s-return>") #'julia-repl-includet-buffer-and-back)
-  (define-key julia-repl-mode-map
-    (kbd "C-c C-t") #'julia-repl-includet-buffer-and-back)
-  (define-key julia-repl-mode-map
-    (kbd "C-c C-a") #'julia-repl-activate-parent-and-back)
+ ;; To make these commands to work I had to comment out stuff in emacs.d/config.el
+ ;;
+ (define-key julia-repl-mode-map
+   (kbd "<s-return>") #'julia-repl-send-region-or-line-and-back)
+ (define-key julia-repl-mode-map
+   (kbd "<M-return>") #'julia-repl-send-region-or-line-and-back)
+ (define-key julia-repl-mode-map
+   (kbd "<M-s-return>") #'julia-repl-includet-buffer-and-back)
+ (define-key julia-repl-mode-map
+   (kbd "C-c C-t") #'julia-repl-includet-buffer-and-back)
+ (define-key julia-repl-mode-map
+   (kbd "C-c C-a") #'julia-repl-activate-parent-and-back)
 
 
 )
@@ -304,28 +313,11 @@
           :desc "execute src blk (asy)" "a" #'ob-async-org-babel-execute-src-block
           )
         )
-
   (map! :map evil-org-mode-map
         :n "gr" #'org-babel-execute-src-block
         )
-
   (setq inferior-julia-program-name "/usr/local/bin/julia")
   (setq inferior-STA-program-name "/usr/local/bin/stata")
-  (org-babel-do-load-languages
-   'org-babel-load-languages
-   '((emacs-lisp . t)
-     (dot . t)
-     (latex . t)
-     (matlab . t)
-     (maxima . t)
-     (R . t)
-     (stata . t)
-     (julia . t)
-     (python . t)
-     (jupyter . t)))
-
-
-
   )
 
 (after! python
@@ -431,11 +423,24 @@
     ,(julia/get-environment (buffer-file-name))
     ,(julia/get-depot-path)))
 
-;; Setup eglot with julia
-(with-eval-after-load 'eglot
-  (setq eglot-connect-timeout 100)
-  (add-to-list 'eglot-server-programs
-         ;; function instead of strings to find project dir at runtime
-         '(julia-mode . julia/get-language-server-invocation))
-  (add-hook 'julia-mode-hook 'eglot-ensure))
+;; From here
+;; https://github.com/hlissner/doom-emacs/issues/3269
+;; Fix problem with project-root
+(defun project-root (project)
+    (car (project-roots project)))
 
+
+
+
+;; Setup eglot with julia
+;;(require 'eglot-jl)
+;;(setq eglot-jl-julia-flags "-J ~/.julia/.ds/ds.so")
+(setq eglot-connect-timeout 1000)
+;;(add-to-list 'eglot-server-programs
+;;              '(julia-mode . eglot-jl--ls-invocation))
+
+          ;; function instead of strings to find project dir at runtime
+;;          '(julia-mode . julia/get-language-server-invocation))
+;;   (add-hook 'julia-mode-hook 'eglot-ensure))
+(setq julia-repl-switches "-J /home/gragusa/.julia/.ds/ds.so")
+(setq inferior-julia-args "-J /home/gragusa/.julia/.ds/ds.so")
