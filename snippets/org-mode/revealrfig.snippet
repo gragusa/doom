@@ -1,0 +1,23 @@
+# -*- mode: snippet -*-
+# name: R src figure horizontal boxed used bulma
+# key: revealrfig
+# contributor: Giuseppe Ragusa <gragusa@luiss.it>
+# group: org-mode       
+# --
+#+REVEAL_HTML: <div class='box'><article class='media'><div class='media-left'>
+#+REVEAL_HTML: <figure class='image is-64x64'><img src='./images/code1.png' alt='code' class='plain'></figure></div>
+#+REVEAL_HTML: <div class='media-content'><div class='content'>
+#+begin_src R :session *R* :results output graphics file :exports results :file ${1:fname}
+$0
+#+end_src
+#+reveal_html: </div></div></article></div>
+
+#+REVEAL_HTML: <div class='box'><article class='media'><div class='media-left'>
+#+REVEAL_HTML: </figure></div>
+#+REVEAL_HTML: <div class='media-content'><div class='content'>
+
+#+ATTR_HTML: :class plain :align center
+#+RESULTS:
+
+
+#+reveal_html: </div></div></article></div>
