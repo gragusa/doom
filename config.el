@@ -105,9 +105,9 @@
 
 (when (eq system-type 'gnu/linux)
 ;;  (load-file "~/.doom.d/turnip.elc")
-  (setq x-ctrl-keysym 'super)
-  (setq x-meta-keysym 'ctrl)
-  (setq x-super-keysym 'meta)
+  ;; (setq x-ctrl-keysym 'super)
+  ;; (setq x-meta-keysym 'ctrl)
+  ;; (setq x-super-keysym 'meta)
   (global-set-key [(M-s-right)] 'windmove-right)
   (global-set-key [(M-s-left)] 'windmove-left)
   (global-set-key [(M-s-up)] 'windmove-up)
