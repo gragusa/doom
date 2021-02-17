@@ -320,57 +320,57 @@
   (setq inferior-STA-program-name "/usr/local/bin/stata")
   )
 
-(after! python
-  (setq elpy-syntax-check-command "epylint"
-        elpy-modules '(elpy-module-company
-                       elpy-module-eldoc
-                       elpy-module-pyvenv
-                       elpy-module-yasnippet
-                       elpy-module-sane-defaults))
-  (elpy-enable)
-  (setq python-shell-interpreter "python"
-        python-shell-interpreter-args "-i")
+;; (after! python
+;;   (setq elpy-syntax-check-command "epylint"
+;;         elpy-modules '(elpy-module-company
+;;                        elpy-module-eldoc
+;;                        elpy-module-pyvenv
+;;                        elpy-module-yasnippet
+;;                        elpy-module-sane-defaults))
+;;   (elpy-enable)
+;;   (setq python-shell-interpreter "python"
+;;         python-shell-interpreter-args "-i")
 
-  (defun elpy--region-without-indentation (beg end)
-  "Return the current region as a string, but without indentation."
-  (let ((region (buffer-substring beg end))
-        (indent-level nil))
-    (catch 'return
-      (with-temp-buffer
-        (insert region)
-        (goto-char (point-min))
-        (while (< (point) (point-max))
-          (cond
-           ((and (not indent-level)
-                 (not (looking-at "[ \t]*$")))
-            (setq indent-level (current-indentation)))
-           ((and indent-level
-                 (not (looking-at "[ \t]*$"))
-                 (< (current-indentation)
-                    indent-level))
-            (error "Can't adjust indentation, consecutive lines indented less than starting line")))
-          (forward-line))
-        (indent-rigidly (point-min)
-                        (point-max)
-                        (- indent-level))
-        (buffer-string)))))
+;;   (defun elpy--region-without-indentation (beg end)
+;;   "Return the current region as a string, but without indentation."
+;;   (let ((region (buffer-substring beg end))
+;;         (indent-level nil))
+;;     (catch 'return
+;;       (with-temp-buffer
+;;         (insert region)
+;;         (goto-char (point-min))
+;;         (while (< (point) (point-max))
+;;           (cond
+;;            ((and (not indent-level)
+;;                  (not (looking-at "[ \t]*$")))
+;;             (setq indent-level (current-indentation)))
+;;            ((and indent-level
+;;                  (not (looking-at "[ \t]*$"))
+;;                  (< (current-indentation)
+;;                     indent-level))
+;;             (error "Can't adjust indentation, consecutive lines indented less than starting line")))
+;;           (forward-line))
+;;         (indent-rigidly (point-min)
+;;                         (point-max)
+;;                         (- indent-level))
+;;         (buffer-string)))))
 
-  (defun gragusa/send-line-or-region ()
-    (interactive)
-    (if (region-active-p)
-        (call-interactively 'elpy-shell-send-region-or-buffer)
-      (python-shell-send-string (elpy--region-without-indentation
-                                 (line-beginning-position)
-                                 (line-end-position)))))
-  (setq split-height-threshold nil)
-  (setq split-width-threshold 160)
+;;   (defun gragusa/send-line-or-region ()
+;;     (interactive)
+;;     (if (region-active-p)
+;;         (call-interactively 'elpy-shell-send-region-or-buffer)
+;;       (python-shell-send-string (elpy--region-without-indentation
+;;                                  (line-beginning-position)
+;;                                  (line-end-position)))))
+;;   (setq split-height-threshold nil)
+;;   (setq split-width-threshold 160)
 
-  (map! :map elpy-mode-map
-        (
-         :desc "send region" "<M-return>" #'gragusa/send-line-or-region
-         :desc "send region" "<M-s-return>" #'elpy-shell-send-defun
-         )
-        ))
+;;   (map! :map elpy-mode-map
+;;         (
+;;          :desc "send region" "<M-return>" #'gragusa/send-line-or-region
+;;          :desc "send region" "<M-s-return>" #'elpy-shell-send-defun
+;;          )
+;;         ))
 
 
 (set-popup-rule! "^\\*Org Agenda" :side 'bottom :size 0.90 :select t :ttl nil)
@@ -389,7 +389,7 @@
   :type 'string
   :group 'julia-config)
 
-(defcustom julia-default-environment "~/.julia/environment/v1.3"
+(defcustom julia-default-environment "~/.julia/environment/v1.5"
   "The default julia environment"
   :type 'string
   :group 'julia-config)
@@ -417,11 +417,11 @@
 (cl-defmethod project-roots ((project (head julia)))
   (list (cdr project)))
 
-(defun julia/get-language-server-invocation (interactive)
-  `("julia"
-    ,(expand-file-name "~/.doom.d/eglot-julia/eglot.jl")
-    ,(julia/get-environment (buffer-file-name))
-    ,(julia/get-depot-path)))
+;; (defun julia/get-language-server-invocation (interactive)
+;;   `("julia"
+;;     ,(expand-file-name "~/.doom.d/eglot-julia/eglot.jl")
+;;     ,(julia/get-environment (buffer-file-name))
+;;     ,(julia/get-depot-path)))
 
 ;; From here
 ;; https://github.com/hlissner/doom-emacs/issues/3269
@@ -435,7 +435,7 @@
 ;; Setup eglot with julia
 ;;(require 'eglot-jl)
 ;;(setq eglot-jl-julia-flags "-J ~/.julia/.ds/ds.so")
-(setq eglot-connect-timeout 1000)
+;;(setq eglot-connect-timeout 1000)
 ;;(add-to-list 'eglot-server-programs
 ;;              '(julia-mode . eglot-jl--ls-invocation))
 
@@ -444,3 +444,4 @@
 ;;   (add-hook 'julia-mode-hook 'eglot-ensure))
 (setq julia-repl-switches "-J /home/gragusa/.julia/.ds/ds.so")
 (setq inferior-julia-args "-J /home/gragusa/.julia/.ds/ds.so")
+(setq lsp-julia-default-environment "~/.julia/environments/v1.5")
