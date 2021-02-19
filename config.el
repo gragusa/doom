@@ -9,7 +9,7 @@
  projectile-project-search-path '("~/Dropbox/repositories/")
  dired-dwim-target t
  org-ellipsis "…"
-;; org-bullets-bullet-list '("∴")
+ org-bullets-bullet-list '("∴")
  org-tags-column -80
  org-directory "~/Dropbox/Org/"
  org-default-notes-file "~/Dropbox/Org/inbox.org"
@@ -455,30 +455,14 @@
 (cl-defmethod project-roots ((project (head julia)))
   (list (cdr project)))
 
-;; (defun julia/get-language-server-invocation (interactive)
-;;   `("julia"
-;;     ,(expand-file-name "~/.doom.d/eglot-julia/eglot.jl")
-;;     ,(julia/get-environment (buffer-file-name))
-;;     ,(julia/get-depot-path)))
-
-;; From here
-;; https://github.com/hlissner/doom-emacs/issues/3269
-;; Fix problem with project-root
-(defun project-root (project)
-    (car (project-roots project)))
 
 
 
-;; Setup eglot with julia
-;;(require 'eglot-jl)
-;;(setq eglot-jl-julia-flags "-J ~/.julia/.ds/ds.so")
-;;(setq eglot-connect-timeout 1000)
-;;(add-to-list 'eglot-server-programs
-;;              '(julia-mode . eglot-jl--ls-invocation))
-
-          ;; function instead of strings to find project dir at runtime
-;;          '(julia-mode . julia/get-language-server-invocation))
-;;   (add-hook 'julia-mode-hook 'eglot-ensure))
 (setq julia-repl-switches "-J /home/gragusa/.julia/.ds/ds.so")
 (setq inferior-julia-args "-J /home/gragusa/.julia/.ds/ds.so")
 (setq lsp-julia-default-environment "~/.julia/environments/v1.5")
+(setq-default with-editor-emacsclient-executable "emacsclient")
+(define-key (current-global-map)
+  [remap async-shell-command] 'with-editor-async-shell-command)
+(define-key (current-global-map)
+  [remap shell-command] 'with-editor-shell-command)
