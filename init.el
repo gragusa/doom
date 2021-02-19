@@ -33,13 +33,12 @@
        doom                ; what makes DOOM look the way it does
        doom-dashboard      ; a nifty splash screen for Emacs
        doom-quit           ; DOOM quit-message prompts when you quit Emacs
-       ;;(emoji +unicode)  ; 🙂
-       fill-column         ; a `fill-column' indicator
+       (emoji +unicode)  ; 🙂
+       ;;fill-column         ; a `fill-column' indicator
        hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
        ;;indent-guides     ; highlighted indent columns
        (ligatures          ; ligatures and symbols to make your code pretty again
-        +fira
         +iosevka)
        ;;minimap           ; show a map of the code on the side
        modeline            ; snazzy, Atom-inspired modeline, plus API
@@ -159,7 +158,17 @@
        ;;nim               ; python + lisp at the speed of c
        ;;nix               ; I hereby declare "nix geht mehr!"
        ;;ocaml             ; an objective camel
-       org                 ; organize your plain life in plain text
+       (org                ; organize your plain life in plain text
+        +brain
+        +dragndrop
+        +hugo
+        +journal
+        +jupyter
+        +noter
+        +pandoc
+        +present
+        +pretty
+        +roam)
        ;;php               ; perl's insecure younger brother
        ;;plantuml          ; diagrams for confusing people more
        ;;purescript        ; javascript, but functional

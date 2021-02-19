@@ -9,7 +9,7 @@
  projectile-project-search-path '("~/Dropbox/repositories/")
  dired-dwim-target t
  org-ellipsis "…"
- org-bullets-bullet-list '("∴")
+;; org-bullets-bullet-list '("∴")
  org-tags-column -80
  org-directory "~/Dropbox/Org/"
  org-default-notes-file "~/Dropbox/Org/inbox.org"
@@ -136,22 +136,17 @@
 
 
 ;; Use fira font
-(setq doom-font (font-spec :family "Fira Code" :size 22))
+(setq doom-font (font-spec :family "Iosevka SS04" :size 22 :weight 'regular))
 
 
 
 ;; ;; Useful key
-
-
 (global-set-key [f1] 'replace-string)
 (global-set-key [f2] 'split-window-horizontally)
 (global-set-key [f3] 'split-window-vertically)
 (global-set-key [f4] 'delete-window)
-
-
 (global-set-key [home] 'beginning-of-line)
 (global-set-key [end] 'end-of-line)
-
 
 ;;Additional keybinding
 (map! :leader
@@ -159,15 +154,17 @@
         :desc " toggle" "n" #'treemacs)
       )
 
+
 (after! julia-mode
   (setq path-to-julia-repl "/usr/local/bin/julia")
 ;;  (add-to-list 'load-path l)
   (add-hook 'julia-mode-hook #'julia-repl-mode)
+  )
 
-)
+
+
 
 (after! julia-repl
-
    (defun julia-repl-send-line-and-back ()
      (interactive)
     (let ((win (selected-window)))
@@ -213,9 +210,50 @@
    (kbd "C-c C-t") #'julia-repl-includet-buffer-and-back)
  (define-key julia-repl-mode-map
    (kbd "C-c C-a") #'julia-repl-activate-parent-and-back)
+ )
 
 
-)
+;; Required https://github.com/non-Jedi/lsp-julia/issues/35
+(setq lsp-enable-folding t)
+
+;;1. Symbol highlighting
+(setq lsp-enable-symbol-highlighting t)
+
+;; 2. lsp-ui-doc - on hover dialogs. * disable via
+(setq lsp-ui-doc-enable t)
+
+;; disable cursor hover (keep mouse hover)
+(setq lsp-ui-doc-show-with-cursor t)
+
+;; disable mouse hover (keep cursor hover)
+(setq lsp-ui-doc-show-with-mouse nil)
+
+;;3. Lenses
+(setq lsp-lens-enable t)
+
+;; 4. Headerline
+(setq lsp-headerline-breadcrumb-enable nil)
+
+;; 5. Sideline code actions * disable whole sideline via
+(setq lsp-ui-sideline-enable nil)
+
+;; hide code actions
+(setq lsp-ui-sideline-show-code-actions nil)
+
+;; Sideline hover symbols * disable whole sideline via
+(setq lsp-ui-sideline-enable nil)
+
+;; hide only hover symbols
+(setq lsp-ui-sideline-show-hover nil)
+
+;;7 . Modeline code actions
+(setq lsp-modeline-code-actions-enable t)
+
+
+
+
+
+
 
 ;; Flyspell
 ;;
@@ -226,15 +264,14 @@
 ;;
 ;;
 ;;
-;; The next setting prettifies src blocks. Inspired by a comment in i use markdown rather than org-mode for my notes : emacs I looked at the now builtin mode prettify-symbols-mode.
-(setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "⋖")
-                                       ("#+END_SRC" . "⋗")
-                                       ("#+begin_src" . "⋖")
-                                       ("#+end_src" . "⋗")
-                                       (">=" . "≥")
-                                       ("=>" . "⇨")))
+;; (setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "⋖")
+;;                                        ("#+END_SRC" . "⋗")
+;;                                        ("#+begin_src" . "⋖")
+;;                                        ("#+end_src" . "⋗")
+;;                                        (">=" . "≥")
+;;                                        ("=>" . "⇨")))
 (setq prettify-symbols-unprettify-at-point 'right-edge)
-(add-hook 'org-mode-hook 'prettify-symbols-mode)
+;;(add-hook 'org-mode-hook 'prettify-symbols-mode)
 
 (font-lock-add-keywords 'org-mode
                         '(("^ *\\([-]\\) "
@@ -244,6 +281,7 @@
                            (0 (prog1 () (compose-region (match-beginning 1) (match-end 1) "∶"))))))
 (add-hook 'org-mode-hook
           (lambda()
+            (org-bullets-mode 1)
             (require 'ox-latex)
             (visual-line-mode)
             (add-to-list 'org-latex-packages-alist '("" "minted"))
@@ -428,7 +466,6 @@
 ;; Fix problem with project-root
 (defun project-root (project)
     (car (project-roots project)))
-
 
 
 
