@@ -10,8 +10,6 @@
 ;; (package! simple-httpd)
 ;; (package! jupyter)
 (package! exec-path-from-shell)
-;;(package! pyenv-mode)
-(package! mustache)
 (package! julia-repl :pin "7ce38a9caf2a9c105afe66f464a2f30e816d69f3")
 ;;(package! elpy)
 ;;(package! turnip)
@@ -24,3 +22,4 @@
 (package! deadgrep)
 (package! sql-indent)
 (package! eterm-256color)
+(package! lsp-julia)

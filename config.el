@@ -455,24 +455,11 @@
   (list (cdr project)))
 
 
-;; From here
-;; https://github.com/hlissner/doom-emacs/issues/3269
-;; Fix problem with project-root
-(defun project-root (project)
-    (car (project-roots project)))
 
 (setq julia-repl-switches "-J /home/gragusa/.julia/.ds/ds.so")
 (setq inferior-julia-args "-J /home/gragusa/.julia/.ds/ds.so")
 (setq lsp-julia-default-environment "~/.julia/environments/v1.5")
 
-
-;; (add-hook 'vterm-mode-hook (lambda()
-;;                              (evil-local-mode 0)
-;;                              (map! :map vterm-mode-map (kbd "TAB") #'vterm-send-tab)
-;;                              (map! :map vterm-mode-map (kbd "TAB") #'vterm-send-tab)
-;;                              (company-mode -1)
-;;                              )
-;;           )
 
 (map! :after vterm
       :map vterm-mode-map
