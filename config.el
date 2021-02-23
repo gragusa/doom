@@ -1,15 +1,13 @@
-;; ;;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
+;; ~/.doom.d/config.el -*- lexical-binding: t; -*-
 
 
 (setq
- ;;doom-font (font-spec :family "SF Mono" :size 20)
- ;;doom-big-font (font-spec :family "SF Mono" :size 36)
- ;;doom-variable-pitch-font (font-spec :family "Avenir Next" :size 18)
+ vterm-kill-buffer-on-exit nil
  org-agenda-skip-scheduled-if-done t
  projectile-project-search-path '("~/Dropbox/repositories/")
  dired-dwim-target t
  org-ellipsis "…"
-;; org-bullets-bullet-list '("∴")
+ org-bullets-bullet-list '("∴")
  org-tags-column -80
  org-directory "~/Dropbox/Org/"
  org-default-notes-file "~/Dropbox/Org/inbox.org"
@@ -135,9 +133,8 @@
   )
 
 
-;; Use fira font
+;; Use Iosevka 
 (setq doom-font (font-spec :family "Iosevka SS04" :size 22 :weight 'regular))
-
 
 
 ;; ;; Useful key
@@ -161,56 +158,55 @@
   (add-hook 'julia-mode-hook #'julia-repl-mode)
   )
 
-
-
-
 (after! julia-repl
-   (defun julia-repl-send-line-and-back ()
-     (interactive)
+  (defun julia-repl-send-line-and-back ()
+    (interactive)
     (let ((win (selected-window)))
       (julia-repl-send-line)
       (select-window win)
       ;;(forward-line 1)
       )
     )
- (defun julia-repl-send-region-or-line-and-back ()
-     (interactive)
+  (defun julia-repl-send-region-or-line-and-back ()
+    (interactive)
     (let ((win (selected-window)))
       (julia-repl-send-region-or-line)
       (select-window win)
       ;;(forward-line 1)
       )
     )
- (defun julia-repl-includet-buffer-and-back ()
-     (interactive)
+  (defun julia-repl-includet-buffer-and-back ()
+    (interactive)
     (let ((win (selected-window)))
       (julia-repl-includet-buffer)
       (select-window win)
       ;;(forward-line 1)
       )
     )
- (defun julia-repl-activate-parent-and-back (arg)
-     (interactive "P")
-     (let ((win (selected-window)))
-       (julia-repl-activate-parent arg)
-       (select-window win)
-       ;;(forward-line 1)
+  (defun julia-repl-activate-parent-and-back (arg)
+    (interactive "P")
+    (let ((win (selected-window)))
+      (julia-repl-activate-parent arg)
+      (select-window win)
+      ;;(forward-line 1)
       )
     )
 
- ;; To make these commands to work I had to comment out stuff in emacs.d/config.el
- ;;
- (define-key julia-repl-mode-map
-   (kbd "<s-return>") #'julia-repl-send-region-or-line-and-back)
- (define-key julia-repl-mode-map
-   (kbd "<M-return>") #'julia-repl-send-region-or-line-and-back)
- (define-key julia-repl-mode-map
-   (kbd "<M-s-return>") #'julia-repl-includet-buffer-and-back)
- (define-key julia-repl-mode-map
-   (kbd "C-c C-t") #'julia-repl-includet-buffer-and-back)
- (define-key julia-repl-mode-map
-   (kbd "C-c C-a") #'julia-repl-activate-parent-and-back)
- )
+  ;; To make these commands to work I had to comment out stuff in emacs.d/config.el
+  (define-key julia-repl-mode-map
+    (kbd "<s-return>") #'julia-repl-send-region-or-line-and-back)
+  (define-key julia-repl-mode-map
+    (kbd "<M-return>") #'julia-repl-send-region-or-line-and-back)
+  (define-key julia-repl-mode-map
+    (kbd "<M-s-return>") #'julia-repl-includet-buffer-and-back)
+  (define-key julia-repl-mode-map
+    (kbd "C-c C-t") #'julia-repl-includet-buffer-and-back)
+  (define-key julia-repl-mode-map
+    (kbd "C-c C-a") #'julia-repl-activate-parent-and-back)
+
+  (julia-repl-set-terminal-backend 'vterm)
+
+  )
 
 
 ;; Required https://github.com/non-Jedi/lsp-julia/issues/35
@@ -228,6 +224,10 @@
 ;; disable mouse hover (keep cursor hover)
 (setq lsp-ui-doc-show-with-mouse nil)
 
+(setq lsp-ui-doc-use-webkit t)
+(setq lsp-ui-doc-delay 0.4)
+(setq lsp-ui-doc-max-width 78)
+
 ;;3. Lenses
 (setq lsp-lens-enable t)
 
@@ -235,13 +235,13 @@
 (setq lsp-headerline-breadcrumb-enable nil)
 
 ;; 5. Sideline code actions * disable whole sideline via
-(setq lsp-ui-sideline-enable nil)
+(setq lsp-ui-sideline-enable t)
 
 ;; hide code actions
 (setq lsp-ui-sideline-show-code-actions nil)
 
 ;; Sideline hover symbols * disable whole sideline via
-(setq lsp-ui-sideline-enable nil)
+(setq lsp-ui-sideline-enable t)
 
 ;; hide only hover symbols
 (setq lsp-ui-sideline-show-hover nil)
@@ -264,14 +264,13 @@
 ;;
 ;;
 ;;
-;; (setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "⋖")
-;;                                        ("#+END_SRC" . "⋗")
-;;                                        ("#+begin_src" . "⋖")
-;;                                        ("#+end_src" . "⋗")
-;;                                        (">=" . "≥")
-;;                                        ("=>" . "⇨")))
+(setq-default prettify-symbols-alist '(("#+BEGIN_SRC" . "⋖")
+                                       ("#+END_SRC" . "⋗")
+                                       ("#+begin_src" . "⋖")
+                                       ("#+end_src" . "⋗")))
+                                       ;; (">=" . "≥")
+                                       ;; ("=>" . "⇨")))
 (setq prettify-symbols-unprettify-at-point 'right-edge)
-;;(add-hook 'org-mode-hook 'prettify-symbols-mode)
 
 (font-lock-add-keywords 'org-mode
                         '(("^ *\\([-]\\) "
@@ -420,7 +419,7 @@
 
 ;; LanguageServer.jl
 ;;
-(require 'cl-generic)
+;; (require 'cl-generic)
 
 (defcustom julia-default-depot ""
   "The default depot path, used if `JULIA_DEPOT_PATH' is unset"
@@ -455,11 +454,6 @@
 (cl-defmethod project-roots ((project (head julia)))
   (list (cdr project)))
 
-;; (defun julia/get-language-server-invocation (interactive)
-;;   `("julia"
-;;     ,(expand-file-name "~/.doom.d/eglot-julia/eglot.jl")
-;;     ,(julia/get-environment (buffer-file-name))
-;;     ,(julia/get-depot-path)))
 
 ;; From here
 ;; https://github.com/hlissner/doom-emacs/issues/3269
@@ -467,18 +461,21 @@
 (defun project-root (project)
     (car (project-roots project)))
 
-
-
-;; Setup eglot with julia
-;;(require 'eglot-jl)
-;;(setq eglot-jl-julia-flags "-J ~/.julia/.ds/ds.so")
-;;(setq eglot-connect-timeout 1000)
-;;(add-to-list 'eglot-server-programs
-;;              '(julia-mode . eglot-jl--ls-invocation))
-
-          ;; function instead of strings to find project dir at runtime
-;;          '(julia-mode . julia/get-language-server-invocation))
-;;   (add-hook 'julia-mode-hook 'eglot-ensure))
 (setq julia-repl-switches "-J /home/gragusa/.julia/.ds/ds.so")
 (setq inferior-julia-args "-J /home/gragusa/.julia/.ds/ds.so")
 (setq lsp-julia-default-environment "~/.julia/environments/v1.5")
+
+
+;; (add-hook 'vterm-mode-hook (lambda()
+;;                              (evil-local-mode 0)
+;;                              (map! :map vterm-mode-map (kbd "TAB") #'vterm-send-tab)
+;;                              (map! :map vterm-mode-map (kbd "TAB") #'vterm-send-tab)
+;;                              (company-mode -1)
+;;                              )
+;;           )
+
+(map! :after vterm
+      :map vterm-mode-map
+      :i [tab] #'vterm--self-insert
+      :i "TAB" #'vterm--self-insert
+)
