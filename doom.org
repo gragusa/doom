@@ -533,11 +533,11 @@ Set base and variable-pitch fonts. I currently like [[https://github.com/be5invi
 #+begin_src emacs-lisp
 (cond (IS-MAC
        (setq doom-font (font-spec :family "Iosevka SS04" :size 18)
-             doom-variable-pitch-font (font-spec :family "Alegreya" :size 18))))
+)))
 
  (cond (IS-LINUX
        (setq doom-font (font-spec :family "Iosevka SS04" :size 22)
-             doom-variable-pitch-font (font-spec :family "Alegreya" :size 22))))
+             )))
 #+end_src
 
 Allow mixed fonts in a buffer. This is particularly useful for Org mode, so I can mix source and prose blocks in the same document.
@@ -824,7 +824,7 @@ Nicer bullets, but with some twist by the new [[https://github.com/integral-dw/o
 #+end_src
 
 #+begin_src emacs-lisp
-(add-hook! org-mode :append (org-superstar-mode 1))
+(add-hook! org-mode (org-superstar-mode 1))
 #+end_src
 
 #+begin_src
@@ -1466,8 +1466,16 @@ I use julia-repl. I get the master branch because sometime doom is stuck to olde
 I compile a system image that I then use inside emacs.
 #+begin_src emacs-lisp
 ;; Meke sure that the file is present
-(setq julia-repl-switches "-J ~/.julia/.ds/ds")
-(setq inferior-julia-args "-J ~/.julia/.ds/ds")
+(cond (IS-MAC
+      (setq julia-repl-switches "--sysimage /Users/gragusa/.julia/.ds/ds")
+      (setq inferior-julia-args "--sysimage /Users/gragusa/.julia/.ds/ds")
+      ))
+
+(cond (IS-LINUX
+      (setq julia-repl-switches "--sysimage /home/gragusa/.julia/.ds/ds")
+      (setq inferior-julia-args "--sysimage /home/gragusa/.julia/.ds/ds")
+      ))
+
 #+end_src
 
 #+begin_src emacs-lisp
@@ -1509,8 +1517,6 @@ I compile a system image that I then use inside emacs.
 #+end_src
 
 
-
-
 *** R
 
 *** Latex
@@ -1519,10 +1525,10 @@ I compile a system image that I then use inside emacs.
 
 - Use Emacs [[https://github.com/tecosaur/emacs-everywhere][Everywhere]]!
 
-  #+begin_src emacs-lisp :tangle packages.el
+  #+begin_src emacs-lisp :tangle no
 (package! emacs-everywhere :pin nil)
   #+end_src
-  #+begin_src emacs-lisp
+  #+begin_src emacs-lisp :tangle no
 (use-package! emacs-everywhere
   :config
   (setq emacs-everywhere-major-mode-function #'org-mode))
@@ -1578,10 +1584,10 @@ I compile a system image that I then use inside emacs.
 
 - Add "unfill" commands to parallel the "fill" ones, bind ~A-q~ to =unfill-paragraph= and rebind ~M-q~ to the =unfill-toggle= command, which fills/unfills paragraphs alternatively.
 
-  #+begin_src emacs-lisp :tangle packages.el
+  #+begin_src emacs-lisp :tangle no
 (package! unfill)
   #+end_src
-  #+begin_src emacs-lisp
+  #+begin_src emacs-lisp :tangle no
 (use-package! unfill
   :defer t
   :bind
@@ -1591,11 +1597,16 @@ I compile a system image that I then use inside emacs.
 
 - The [[https://github.com/bastibe/annotate.el][annotate]] package is nice - allows adding annotations to files without modifying the file itself.
 
-  #+begin_src emacs-lisp :tangle packages.el
+  #+begin_src emacs-lisp :tangle no
 (package! annotate)
   #+end_src
 
 - [[https://github.com/csrhodes/gift-mode][gift-mode]] for editing quizzes in [[https://docs.moodle.org/39/en/GIFT_format][GIFT format]].
-  #+begin_src emacs-lisp :tangle packages.el
+  #+begin_src emacs-lisp :tangle no
 (package! gift-mode)
   #+end_src
+
+#+begin_src emacs-lisp :tangle packages.el
+(package! exec-path-from-shell)
+#+end_src
+
