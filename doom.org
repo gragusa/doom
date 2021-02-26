@@ -21,6 +21,7 @@ This file is written in [[https://leanpub.com/lit-config][literate programming s
   - [[#customized-variables][Customized variables]]
 - [[#doom-modules][Doom modules]]
 - [[#general-configuration][General configuration]]
+  - [[#keybindings][Keybindings]]
   - [[#visual-session-and-window-settings][Visual, session and window settings]]
   - [[#key-bindings][Key bindings]]
     - [[#miscellaneous-keybindings][Miscellaneous keybindings]]
@@ -28,6 +29,7 @@ This file is written in [[https://leanpub.com/lit-config][literate programming s
 - [[#org-mode][Org mode]]
   - [[#general-org-configuration][General Org Configuration]]
   - [[#org-visual-settings][Org visual settings]]
+  - [[#latex-exporter][Latex exporter]]
   - [[#capturing-and-note-taking][Capturing and note taking]]
   - [[#capturing-images][Capturing images]]
   - [[#capturing-links][Capturing links]]
@@ -448,7 +450,9 @@ My user information.
 
 I am very much used to have the usual MAC keybindings. They are bounded in Carbon Emacs. I am using Emacs@28, so I need to manually add them. This can be done quite easily by the [[http://svn.sourceforge.jp/cgi-bin/viewcvs.cgi/zenitani/CarbonEmacs/src/lisp/mac-key-mode.el?root=macwiki&view=markup][mac-key-mode]].
 #+begin_src emacs-lisp :tangle packages.el
+(cond (IS-MAC
 (package! mac-key-mode)
+))
 #+end_src
 
 This is disabled.
@@ -632,9 +636,9 @@ The =switch-buffer-functions= package allows us to update the =recentf= buffer l
   (add-hook 'switch-buffer-functions #'my-recentf-track-visited-file))
 #+end_src
 
-Use =+default/search-buffer= for searching by default, I like the Swiper interface.
+The following will use =+default/search-buffer= for searching by default, but I don't like the Swiper interface so I disable it.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 ;;(map! "C-s" #'counsel-grep-or-swiper)
 (map! "C-s" #'+default/search-buffer)
 #+end_src
@@ -753,7 +757,7 @@ Doom's Org module provides a lot of sane configuration settings, so I don't have
 
 Default directory for Org files. I keep everything in Dropbox.
 #+begin_src emacs-lisp
-(setq org-directory "~/Dropbox/org/")
+(setq org-directory "~/Dropbox/Org/")
 #+end_src
 
 Hide Org markup indicators.
@@ -813,23 +817,16 @@ Enable variable and visual line mode in Org mode by default and start intend mod
 #+begin_src emacs-lisp
 (add-hook! org-mode :append
            #'visual-line-mode
-           #'org-indent-mode)
+           #'org-indent-mode
+           #'prettify-symbol-mode)
 #+end_src
 
 Nicer bullets, but with some twist by the new [[https://github.com/integral-dw/org-superstar-mode][org-superstar-mode]]
 
 #+begin_src emacs-lisp :tangle packages.el
-(package! org-superstar-mode
-  :recipe (:host github :repo "integral-dw/org-superstar-mode"))
+(package! org-superstar)
 #+end_src
 
-#+begin_src emacs-lisp
-(add-hook! org-mode (org-superstar-mode 1))
-#+end_src
-
-#+begin_src
-
-#+end_src
 
 Use [[https://github.com/awth13/org-appear][org-appear]] to reveal emphasis markers when moving the cursor over them.
 
@@ -856,6 +853,7 @@ This substitute =#+begin_src= with nicer unicode fonts
                                        ;; (">=" . "≥")
                                        ;; ("=>" . "⇨")))
 (setq prettify-symbols-unprettify-at-point 'right-edge)
+
 #+end_src
 
 ** Latex exporter
@@ -1456,11 +1454,26 @@ I use julia-repl. I get the master branch because sometime doom is stuck to olde
 )
 #+end_src
 
+I heavily use unicode while editing jl files
+  #+begin_src emacs-lisp
+    (defun setup-unicode ()
+      "Unicode input for the buffer."
+      (interactive)
+      (company-mode)                        ; using company-mode
+      (setq-local company-backends '(company-math-symbols-unicode))
+      (setq-local company-minimum-prefix-length 1)
+      (setq-local company-idle-delay 0))
+  #+end_src
+
+
+
 #+begin_src emacs-lisp
 (after! julia-mode
   (setq path-to-julia-repl "/usr/local/bin/julia")
-  (add-hook 'julia-mode-hook 'julia-repl-mode)
-  )
+  (add-hook! julia-mode-hook
+             #'julia-repl-mode
+             (setup-unicode))
+)
 #+end_src
 
 I compile a system image that I then use inside emacs.
@@ -1482,18 +1495,6 @@ I compile a system image that I then use inside emacs.
 (setq inferior-julia-program-name "/usr/local/bin/julia")
 #+end_src
 
-- Use unicode while editing jl files
-  #+begin_src emacs-lisp
-    (defun setup-unicode ()
-      "Unicode input for the buffer."
-      (interactive)
-      (company-mode)                        ; using company-mode
-      (setq-local company-backends '(company-math-symbols-unicode))
-      (setq-local company-minimum-prefix-length 1)
-      (setq-local company-idle-delay 0))
-
-  (add-hook! julia-mode-hook #'setup-unicode)
-  #+end_src
 
   - To use lsp features I need to install julia-lsp
     #+begin_src emacs-lisp :tangle packages.el
@@ -1515,6 +1516,36 @@ I compile a system image that I then use inside emacs.
       :i "TAB" #'vterm--self-insert
 )
 #+end_src
+
+**** LSP
+#+begin_src emacs-lisp
+;; Required https://github.com/non-Jedi/lsp-julia/issues/35
+(setq lsp-enable-folding t)
+;;1. Symbol highlighting
+(setq lsp-enable-symbol-highlighting t)
+;; 2. lsp-ui-doc - on hover dialogs. * disable via
+(setq lsp-ui-doc-enable t)
+(setq lsp-ui-doc-show-with-cursor t)
+;; disable mouse hover (keep cursor hover)
+(setq lsp-ui-doc-show-with-mouse nil)
+(setq lsp-ui-doc-use-webkit t)
+(setq lsp-ui-doc-delay 0.4)
+(setq lsp-ui-doc-max-width 96)
+;;3. Lenses
+(setq lsp-lens-enable t)
+;; 4. Headerline
+(setq lsp-headerline-breadcrumb-enable nil)
+;; 5. Sideline code actions * disable whole sideline via
+(setq lsp-ui-sideline-enable t)
+;; hide code actions
+(setq lsp-ui-sideline-show-code-actions nil)
+;; Sideline hover symbols * disable whole sideline via
+(setq lsp-ui-sideline-enable t)
+;; hide only hover symbols
+(setq lsp-ui-sideline-show-hover nil)
+#+end_src
+
+
 
 
 *** R
