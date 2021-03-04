@@ -1523,12 +1523,12 @@ I compile a system image that I then use inside emacs.
 (setq lsp-enable-folding t)
 ;;1. Symbol highlighting
 (setq lsp-enable-symbol-highlighting t)
-;; 2. lsp-ui-doc - on hover dialogs. * disable via
+;; 2. lsp-ui-doc - on hover dialogs
 (setq lsp-ui-doc-enable t)
 (setq lsp-ui-doc-show-with-cursor t)
 ;; disable mouse hover (keep cursor hover)
 (setq lsp-ui-doc-show-with-mouse nil)
-(setq lsp-ui-doc-use-webkit t)
+(setq lsp-ui-doc-use-webkit nil)
 (setq lsp-ui-doc-delay 0.4)
 (setq lsp-ui-doc-max-width 96)
 ;;3. Lenses
