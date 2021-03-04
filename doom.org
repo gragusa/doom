@@ -861,7 +861,6 @@ If I export code to latex using minted, I have to invoke latex with =--shell-esc
 #+begin_src emacs-lisp
 (add-hook 'org-mode-hook
           (lambda()
-            (org-bullets-mode 1)
             (add-to-list 'org-latex-packages-alist '("" "minted"))
             (setq org-export-allow-bind-keywords t
                   org-latex-listings 'minted)
@@ -1469,10 +1468,10 @@ I heavily use unicode while editing jl files
 
 #+begin_src emacs-lisp
 (after! julia-mode
+  (set-company-backend! 'julia-mode 'company-capf 'company-yasnippet 'company-math-symbols-unicode)
   (setq path-to-julia-repl "/usr/local/bin/julia")
   (add-hook! julia-mode-hook
-             #'julia-repl-mode
-             (setup-unicode))
+             #'julia-repl-mode)
 )
 #+end_src
 
