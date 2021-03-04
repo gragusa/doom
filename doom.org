@@ -818,7 +818,7 @@ Enable variable and visual line mode in Org mode by default and start intend mod
 (add-hook! org-mode :append
            #'visual-line-mode
            #'org-indent-mode
-           #'prettify-symbol-mode)
+           #'prettify-symbols-mode)
 #+end_src
 
 Nicer bullets, but with some twist by the new [[https://github.com/integral-dw/org-superstar-mode][org-superstar-mode]]
