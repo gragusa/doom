@@ -20,6 +20,8 @@ This file is written in [[https://leanpub.com/lit-config][literate programming s
   - [[#config-file-headers][Config file headers]]
   - [[#customized-variables][Customized variables]]
 - [[#doom-modules][Doom modules]]
+- [[#emacs-28-specific-stuff][Emacs 28 Specific Stuff]]
+  - [[#unpin][Unpin]]
 - [[#general-configuration][General configuration]]
   - [[#keybindings][Keybindings]]
   - [[#visual-session-and-window-settings][Visual, session and window settings]]
@@ -439,6 +441,12 @@ This code is written to the =init.el= to select which modules to load. Written h
        (default +bindings +smartparens))
 #+end_src
 
+* Emacs 28 Specific Stuff
+** Unpin
+I need to unpin several packages to get Emacs 28.0.5 working
+#+begin_src emacs-lisp :tangle package.el
+(unpin! dap-mode lsp-mode treemacs spinner julia-repl)
+#+end_src
 * General configuration
 
 My user information.
