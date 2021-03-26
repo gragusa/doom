@@ -47,12 +47,14 @@ This file is written in [[https://leanpub.com/lit-config][literate programming s
   - [[#avoiding-non-org-mode-files][Avoiding non-Org mode files]]
   - [[#revealjs-presentations][Reveal.js presentations]]
   - [[#programming-org][Programming Org]]
+- [[#r][R]]
 - [[#coding][Coding]]
     - [[#general-coding][General Coding]]
     - [[#julia][Julia]]
-    - [[#r][R]]
+    - [[#r-1][R]]
     - [[#latex][Latex]]
 - [[#other-tools][Other tools]]
+- [[#popup-rules][Popup rules]]
 
 * References
 
@@ -532,7 +534,7 @@ I made a super simple set of Doom-Emacs custom splash screens by combining [[htt
 
 If you want to choose at random among a few different splash images, you can list them in =alternatives=.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (let ((alternatives '("doom-emacs-bw-light.svg")))
    ;;((alternatives '("doom-emacs-color.png" "doom-emacs-bw-light.svg")))
   (setq fancy-splash-image
@@ -1413,6 +1415,22 @@ This function returns a list of all the headings in the given file which match t
     (zz/headings-with-tags file tags)))
 #+end_src
 
+* R
+I sometime need to quickly edit .Rnw and .R files. For getting ESS to work with these I need to use =polymode= and =poly-R=
+#+begin_src emacs-lisp :tangle packages.el
+(package! polymode :recipe
+  (:host github :repo "polymode/polymode"))
+(package! poly-R :recipe
+  (:host github :repo "polymode/poly-R"))
+#+end_src
+Activate polymode
+#+begin_src emacs-lisp
+;; ------------------------------------------------------------
+;; Activate polymode when loading Rmarkdown documents. Also see
+(use-package! polymode
+  :commands (R)
+)
+#+end_src
 * Coding
 *** General Coding
 
@@ -1452,7 +1470,7 @@ Some useful settings for LISP coding - =smartparens-strict-mode= to enforce pare
 
 
 *** Julia
-I use julia-repl. I get the master branch because sometime doom is stuck to older versions.
+I use =julia-repl=. I get the master branch because sometime doom is stuck to older versions.
 #+begin_src emacs-lisp :tangle packages.el
 (package! julia-repl
   :recipe (:host github
@@ -1472,36 +1490,26 @@ I heavily use unicode while editing jl files
       (setq-local company-idle-delay 0))
   #+end_src
 
-
-
 #+begin_src emacs-lisp
 (after! julia-mode
-  (set-company-backend! 'julia-mode 'company-capf 'company-yasnippet 'company-math-symbols-unicode)
-  (setq path-to-julia-repl "/usr/local/bin/julia")
   (add-hook! julia-mode-hook
-             #'julia-repl-mode)
+    #'julia-repl-mode
+    ;;(setup-unicode)
+    )
 )
+
+(use-package! julia-repl
+  :after julia-mode
+  :config
+  (julia-repl-set-terminal-backend 'vterm)
+   (cond (IS-MAC
+           (setq julia-repl-switches "--sysimage /Users/gragusa/.julia/.ds/ds")
+           ))
+    (cond (IS-LINUX
+           (setq julia-repl-switches "--sysimage /home/gragusa/.julia/.ds/ds")
+           ))
+    )
 #+end_src
-
-I compile a system image that I then use inside emacs.
-#+begin_src emacs-lisp
-;; Meke sure that the file is present
-(cond (IS-MAC
-      (setq julia-repl-switches "--sysimage /Users/gragusa/.julia/.ds/ds")
-      (setq inferior-julia-args "--sysimage /Users/gragusa/.julia/.ds/ds")
-      ))
-
-(cond (IS-LINUX
-      (setq julia-repl-switches "--sysimage /home/gragusa/.julia/.ds/ds")
-      (setq inferior-julia-args "--sysimage /home/gragusa/.julia/.ds/ds")
-      ))
-
-#+end_src
-
-#+begin_src emacs-lisp
-(setq inferior-julia-program-name "/usr/local/bin/julia")
-#+end_src
-
 
   - To use lsp features I need to install julia-lsp
     #+begin_src emacs-lisp :tangle packages.el
@@ -1648,3 +1656,13 @@ I compile a system image that I then use inside emacs.
 (package! exec-path-from-shell)
 #+end_src
 
+
+
+* Popup rules
+
+#+begin_src emacs-list :tangle no
+;; Open ESS R window to the left iso bottom.
+  (set-popup-rule! "^\\*R.*\\*$" :side 'left :size 0.38 :select nil :ttl nil :quit nil :modeline t))
+  (set-popup-rule! "^\\*R.*\\*$" :side 'left :size 0.38 :select nil :ttl nil :quit nil :modeline t))
+
+#+end_src
