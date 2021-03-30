@@ -970,6 +970,10 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
   (julia-repl-set-terminal-backend 'vterm)
 )
 
+(after! lsp-julia
+    (setq lsp-enable-folding t)
+)
+
 ;; Meke sure that the file is present
 (setq julia-repl-switches "--sysimage /Users/gragusa/.julia/.ds/ds")
 (setq inferior-julia-args "--sysimage /Users/gragusa/.julia/.ds/ds")
