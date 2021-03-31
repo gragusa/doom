@@ -243,9 +243,9 @@ This code is written to the =init.el= to select which modules to load. Written h
        ;;deft              ; notational velocity for Emacs
        doom                ; what makes DOOM look the way it does
        doom-dashboard      ; a nifty splash screen for Emacs
-       ;;doom-quit           ; DOOM quit-message prompts when you quit Emacs
-       (emoji +unicode)  ; 🙂
-       ;;fill-column         ; a `fill-column' indicator
+       ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
+       (emoji +unicode)    ;
+       ;;fill-column       ; a `fill-column' indicator
        hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
        ;;hydra
        ;;indent-guides     ; highlighted indent columns
@@ -407,7 +407,7 @@ This code is written to the =init.el= to select which modules to load. Written h
        :email
        ;;(mu4e +gmail)
        ;;notmuch
-       (wanderlust +gmail)
+       ;;(wanderlust +gmail)
 
        :app
        ;;calendar
@@ -425,7 +425,7 @@ This code is written to the =init.el= to select which modules to load. Written h
 I use Emacs 28.0.5 compiled with =--native-comp= flag. Doom suppports it, but some packages are pinned to versions that do not work well with it.
 ** Unpin
 I need to unpin several packages to get Emacs 28.0.5 working
-#+begin_src emacs-lisp :tangle package.el
+#+begin_src emacs-lisp :tangle packages.el
 (unpin! dap-mode lsp-mode treemacs spinner)
 #+end_src
 * General configuration
@@ -433,11 +433,11 @@ I need to unpin several packages to get Emacs 28.0.5 working
 ** User Information
 
 My user information.
-
 #+begin_src emacs-lisp
 (setq user-full-name "Giuseppe Ragusa"
       user-mail-address "giuseppe.ragusa@gmail.com")
 #+end_src
+
 ** MAC Keybindings
 
 I am very much used to have the usual MAC keybindings. They are bounded in Carbon Emacs. I am using Emacs@28, so I need to manually add them. This can be done quite easily by the [[http://svn.sourceforge.jp/cgi-bin/viewcvs.cgi/zenitani/CarbonEmacs/src/lisp/mac-key-mode.el?root=macwiki&view=markup][mac-key-mode]].
@@ -507,7 +507,7 @@ I tend to change very often the fonts that I use. The only fix-point is =JuliaMo
 Set base and variable-pitch fonts. I currently like [[https://github.com/be5invis/Iosevka]Iosevka SS4]] and [[https://www.huertatipografica.com/en/fonts/alegreya-ht-pro][Alegreya]]. I also use a laptop (OSX) where a prefer smaller font sizes and a desktop (Linux) so a set font size conditionally.
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "JuliaMono" :size 24)
+(setq doom-font (font-spec :family "IosevkaSS04" :size 22)
       doom-variable-pitch-font (font-spec :family "Overpass" :size 24)
       doom-unicode-font (font-spec :family "JuliaMono")
       doom-serif-font (font-spec :family "IBM Plex Mono" :weight 'light))
@@ -523,7 +523,7 @@ Set base and variable-pitch fonts. I currently like [[https://github.com/be5invi
 
 Allow mixed fonts in a buffer. This is particularly useful for Org mode, so I can mix source and prose blocks in the same document.
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
 (add-hook! org-mode-hook #'mixed-pitch-mode)
 (setq mixed-pitch-variable-pitch-cursor nil)
 #+end_src
@@ -541,6 +541,7 @@ What's the point in an Emacs theme if the rest of Linux looks different?
 #+end_src
 
 Run =theme-magic-from-emacs= when the theme is changed
+
 #+begin_src emacs-lisp
 (run-with-idle-timer 0.1 nil (lambda () (add-hook 'doom-load-theme-hook 'theme-magic-from-emacs)))
 #+end_src
@@ -614,9 +615,8 @@ When using =treemacs= exclude several files that are never to be opened in emacs
 #+begin_src emacs-lisp :tangle packages.el
 (package! org-fragtog :pin "0151cabc7aa9f244f82e682b87713b344d780c23")
 (package! org-superstar)
-(package! org-appear :recipe (:host github :repo "awth13/org-appear")
-  :pin "0b3b029d5851c77ee792727b280f062eaf2c22c7")
-(package! org-ref :pin "3ca9beb744621f007d932deb8a4197467012c23a")
+(package! org-appear :recipe (:host github :repo "awth13/org-appear"))
+;;(package! org-ref )
 (package! org-pandoc-import
   :recipe (:host github
            :repo "tecosaur/org-pandoc-import"
@@ -631,7 +631,7 @@ When using =treemacs= exclude several files that are never to be opened in emacs
 
 **** Directories
 #+begin_src emacs-lisp
-  (setq org-directory "~/Dropbox/Org"          ; Kitchen sink!
+  (setq org-directory "/home/gragusa/Dropbox/Org"          ; Kitchen sink!
         ;;org-roam-directory "~/Dropbox/Org/roam"
         org-log-done 'time                     ; having the time a item is done sounds convenient
         org-list-allow-alphabetical t          ; have a. A. a) A) list bullets
@@ -945,38 +945,39 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
 )
 #+end_src
 
+For some reason, the interaction of company and latexsub make the poit after
+completion go at the beginning of the insertion. This function fix it.
+
+#+begin_src emacs-lisp
+  (defun my-company-after-completion-hook (&rest _ignored)
+    ;; this would be called with the completion candidate, so you could
+    ;; modify it to insert spaces based on the candidate
+    (forward-word))
+#+end_src
 
 #+begin_src emacs-lisp
 
- (set-company-backend! 'julia-mode 'campany-capf 'company-yasnippet 'company-math-symbols-unicode)
+(set-company-backend! 'julia-mode 'company-capf 'company-yasnippet 'company-math-symbols-unicode)
 
- (defun setup-unicode ()
-  "Unicode input for the buffer."
+(defun setup-unicode ()
+   "Unicode input for the buffer."
   (interactive)
   (company-mode)                        ; using company-mode
   (setq-local company-backends '(company-math-symbols-unicode company-yasnippet company-capf))
   (setq-local company-minimum-prefix-length 1)
-  (setq-local company-idle-delay 0))
-
-(use-package julia-mode
-  :magic ("%JL" . julia-mode)
-  :init
-  (setq inferior-julia-program-name 'julia)
-  :hook
-  (setup-unicode)
-)
+  (setq-local company-idle-delay 0)
+  (setq-local company-completion-finished-hook #'my-company-after-completion-hook)
+  )
 
 (after! julia-repl
   (julia-repl-set-terminal-backend 'vterm)
-)
+  )
 
 (after! lsp-julia
-    (setq lsp-enable-folding t)
-)
+  (setq lsp-enable-folding t)
+  )
 
-;; Meke sure that the file is present
+;; Make sure that the file is present
 (setq julia-repl-switches "--sysimage /Users/gragusa/.julia/.ds/ds")
 (setq inferior-julia-args "--sysimage /Users/gragusa/.julia/.ds/ds")
-
-
 #+end_src
