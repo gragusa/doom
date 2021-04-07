@@ -23,6 +23,7 @@ This file is written in [[https://leanpub.com/lit-config][literate programming s
   - [[#unpin][Unpin]]
 - [[#general-configuration][General configuration]]
   - [[#user-information][User Information]]
+  - [[#defaults][Defaults]]
   - [[#mac-keybindings][MAC Keybindings]]
   - [[#make-backup-and-autosave][Make Backup and autosave]]
   - [[#exit-without-asking][Exit without asking]]
@@ -34,17 +35,23 @@ This file is written in [[https://leanpub.com/lit-config][literate programming s
     - [[#set-the-emacs-theme-to-the-terminal][Set the emacs theme to the terminal]]
     - [[#modeline][Modeline]]
     - [[#treemacs][Treemacs]]
+    - [[#windows-splitting][Windows splitting]]
 - [[#modules-configuration][Modules configuration]]
   - [[#org-mode][Org-mode]]
     - [[#additional-packages][Additional packages]]
     - [[#org-config][org-config]]
+    - [[#end-after-config][End after! config]]
   - [[#latex][LaTeX]]
   - [[#vterm][vterm]]
   - [[#julia-mode][Julia Mode]]
 
 * References
 
-Configuring Emacs is a hobby. I think the majority of people using Emacs spends more time configuring it than using its features. I am not different. I have been writing many Emacs config files over the years. This is the results of such constant endeavor.
+Configuring Emacs is a hobby. I think the majority of people using Emacs spends
+more time configuring it than using its features. I am not different. I have
+been writing many Emacs config files over the years. My conclusion is that less
+is more. While overconfiguring Emacs makes it look coll, at the end of the day a
+clean fast editor is more functional.
 
 This config is a collection of other people's (who know what they are doing with lisp) configuration. You will find snippets from all of these (and possibly others) throughout my config.
 
@@ -225,200 +232,203 @@ We start by simply defining the standard headers used by the three files. These 
 This code is written to the =init.el= to select which modules to load. Written here as-is for now, as it is quite well structured and clear.
 
 #+begin_src emacs-lisp :tangle init.el
-(doom! :input
-       ;;chinese
-       ;;japanese
-       ;;layout            ; auie,ctsrnm is the superior home row
+  (doom! :input
+         ;;chinese
+         ;;japanese
+         ;;layout            ; auie,ctsrnm is the superior home row
 
-       :completion
-       (company            ; the ultimate code completion backend
-        +childframe)
-       ;;helm              ; the *other* search engine for love and life
-       ;;ido               ; the other *other* search engine...
-       (ivy                ; a search engine for love and life
-        +prescient
-        +fuzzy
-        +icons)
-       :ui
-       ;;deft              ; notational velocity for Emacs
-       doom                ; what makes DOOM look the way it does
-       doom-dashboard      ; a nifty splash screen for Emacs
-       ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
-       (emoji +unicode)    ;
-       ;;fill-column       ; a `fill-column' indicator
-       hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
-       ;;hydra
-       ;;indent-guides     ; highlighted indent columns
-       (ligatures          ; ligatures and symbols to make your code pretty again
-        +iosevka
-        +extra)
-       ;;minimap           ; show a map of the code on the side
-       modeline            ; snazzy, Atom-inspired modeline, plus API
-       ;;nav-flash         ; blink cursor line after big motions
-       ;;neotree           ; a project drawer, like NERDTree for vim
-       ophints             ; highlight the region an operation acts on
-       (popup +defaults)   ; tame sudden yet inevitable temporary windows
-       ;;tabs              ; a tab bar for Emacs
-       treemacs          ; a project drawer, like neotree but cooler
-       unicode           ; extended unicode support for various languages
-       ;;vc-gutter         ; vcs diff in the fringe
-       vi-tilde-fringe     ; fringe tildes to mark beyond EOB
-       ;;window-select     ; visually switch windows
-       workspaces          ; tab emulation, persistence & separate workspaces
-       ;;zen               ; distraction-free coding or writing
+         :completion
+         (company            ; the ultimate code completion backend
+          +childframe)
+         ;;helm              ; the *other* search engine for love and life
+         ;;ido               ; the other *other* search engine...
+         (ivy                ; a search engine for love and life
+          +prescient
+          +fuzzy
+          +icons)
+         :ui
+         ;;deft              ; notational velocity for Emacs
+         doom                ; what makes DOOM look the way it does
+         doom-dashboard      ; a nifty splash screen for Emacs
+         ;;doom-quit         ; DOOM quit-message prompts when you quit Emacs
+         (emoji +unicode)    ;
+         ;;fill-column       ; a `fill-column' indicator
+         hl-todo             ; highlight TODO/FIXME/NOTE/DEPRECATED/HACK/REVIEW
+         ;;hydra
+         ;;indent-guides     ; highlighted indent columns
+         (ligatures          ; ligatures and symbols to make your code pretty again
+          +iosevka
+          +extra)
+         ;;minimap           ; show a map of the code on the side
+         modeline            ; snazzy, Atom-inspired modeline, plus API
+         ;;nav-flash         ; blink cursor line after big motions
+         ;;neotree           ; a project drawer, like NERDTree for vim
+         ophints             ; highlight the region an operation acts on
+         (popup +defaults)   ; tame sudden yet inevitable temporary windows
+         ;;tabs              ; a tab bar for Emacs
+         treemacs          ; a project drawer, like neotree but cooler
+         unicode           ; extended unicode support for various languages
+         ;;vc-gutter         ; vcs diff in the fringe
+         vi-tilde-fringe     ; fringe tildes to mark beyond EOB
+         ;;window-select     ; visually switch windows
+         workspaces          ; tab emulation, persistence & separate workspaces
+         ;;zen               ; distraction-free coding or writing
 
-       :editor
-       (evil +everywhere)  ; come to the dark side, we have cookies
-       file-templates      ; auto-snippets for empty files
-       fold                ; (nigh) universal code folding
-       ;;(format +onsave)  ; automated prettiness
-       ;;god               ; run Emacs commands without modifier keys
-       ;;lispy             ; vim for lisp, for people who don't like vim
-       multiple-cursors  ; editing in many places at once
-       ;;objed             ; text object editing for the innocent
-       ;;parinfer          ; turn lisp into python, sort of
-       ;;rotate-text       ; cycle region at point between text candidates
-       snippets          ; my elves. They type so I don't have to
-       word-wrap         ; soft wrapping with language-aware indent
+         :editor
+         (evil +everywhere)  ; come to the dark side, we have cookies
+         file-templates      ; auto-snippets for empty files
+         fold                ; (nigh) universal code folding
+         ;;(format +onsave  ; automated prettiness
+         ;;god              ; run Emacs commands without modifier keys
+         ;;lispy            ; vim for lisp, for people who don't like vim
+         multiple-cursors  ; editing in many places at once
+         ;;objed           ; text object editing for the innocent
+         ;;parinfer        ; turn lisp into python, sort of
+         ;;rotate-text     ; cycle region at point between text candidates
+         snippets          ; my elves. They type so I don't have to
+         word-wrap         ; soft wrapping with language-aware indent
 
-       :emacs
-       (dired            ; making dired pretty [functional]
-        +icons
-        +ranger)
-       electric          ; smarter, keyword-based electric-indent
-       ;;ibuffer         ; interactive buffer management
-       undo              ; persistent, smarter undo for your inevitable mistakes
-       ;;vc                ; version-control and Emacs, sitting in a tree
+         :emacs
+         (dired            ; making dired pretty [functional]
+          +icons
+          +ranger)
+         electric          ; smarter, keyword-based electric-indent
+         ;;ibuffer         ; interactive buffer management
+         undo              ; persistent,smarter undo for your inevitable mistakes
+         ;;vc              ; version-control and Emacs, sitting in a tree
 
-       :term
-       ;;eshell          ; the elisp shell that works everywhere
-       ;;shell           ; simple shell REPL for Emacs
-       ;;term            ; basic terminal emulator for Emacs
-       vterm             ; the best terminal emulation in Emacs
+         :term
+         ;;eshell          ; the elisp shell that works everywhere
+         ;;shell           ; simple shell REPL for Emacs
+         ;;term            ; basic terminal emulator for Emacs
+         vterm             ; the best terminal emulation in Emacs
 
-       :checkers
-       syntax            ; tasing you for every semicolon you forget
-       (spell
-        +flyspell
-        +everywhere)     ; tasing you for misspelling mispelling
-       ;;grammar         ; tasing grammar mistake every you make
+         :checkers
+         syntax            ; tasing you for every semicolon you forget
+         (spell
+          +flyspell
+          +everywhere)     ; tasing you for misspelling mispelling
+         ;;grammar         ; tasing grammar mistake every you make
 
-       :tools
-       ;;ansible
-       ;;debugger          ; FIXME stepping through code, to help you add bugs
-       ;;direnv
-       ;;docker
-       ;;editorconfig      ; let someone else argue about tabs vs spaces
+         :tools
+         ;;ansible
+         ;;debugger          ; FIXME stepping through code, to help you add bugs
+         ;;direnv
+         ;;docker
+         ;;editorconfig      ; let someone else argue about tabs vs spaces
 
-       ;;ein               ; tame Jupyter notebooks with emacs
-       (eval +overlay)     ; run code, run (also, repls)
-       ;;gist              ; interacting with github gists
-       lookup              ; navigate your code and its documentation
-       lsp
-       magit               ; a git porcelain for Emacs
-       ;;make              ; run make tasks from Emacs
-       ;;pass              ; password manager for nerds
-       pdf                 ; pdf enhancements
-       ;;prodigy           ; FIXME managing external services & code builders
-       ;;rgb               ; creating color strings
-       ;;taskrunner        ; taskrunner for all your projects
-       ;;terraform         ; infrastructure as code
-       tmux                ; an API for interacting with tmux
-       ;;upload            ; map local to remote projects via ssh/ftp
+         ;;ein               ; tame Jupyter notebooks with emacs
+         (eval +overlay)     ; run code, run (also, repls)
+         ;;gist              ; interacting with github gists
+         lookup              ; navigate your code and its documentation
+         ;;lsp
+         magit               ; a git porcelain for Emacs
+         ;;make              ; run make tasks from Emacs
+         ;;pass              ; password manager for nerds
+         pdf                 ; pdf enhancements
+         ;;prodigy           ; FIXME managing external services & code builders
+         ;;rgb               ; creating color strings
+         ;;taskrunner        ; taskrunner for all your projects
+         ;;terraform         ; infrastructure as code
+         tmux                ; an API for interacting with tmux
+         ;;upload            ; map local to remote projects via ssh/ftp
 
-       :os
-       (:if IS-MAC macos)  ; improve compatibility with macOS
-       ;;tty               ; improve the terminal Emacs experience
+         :os
+         (:if IS-MAC macos)  ; improve compatibility with macOS
+         ;;tty               ; improve the terminal Emacs experience
 
-       :lang
-       ;;agda              ; types of types of types of types...
-       ;;cc                ; C/C++/Obj-C madness
-       ;;clojure           ; java with a lisp
-       ;;common-lisp       ; if you've seen one lisp, you've seen them all
-       ;;coq               ; proofs-as-programs
-       ;;crystal           ; ruby at the speed of c
-       ;;csharp            ; unity, .NET, and mono shenanigans
-       ;;data              ; config/data formats
-       ;;(dart +flutter)   ; paint ui and not much else
-       ;;elixir            ; erlang done right
-       ;;elm               ; care for a cup of TEA?
-       emacs-lisp          ; drown in parentheses
-       ;;erlang            ; an elegant language for a more civilized age
-       (ess                ; emacs speaks statistics
-        +lsp)
-       ;;faust             ; dsp, but you get to keep your soul
-       ;;fsharp            ; ML stands for Microsoft's Language
-       ;;fstar             ; (dependent) types and (monadic) effects and Z3
-       ;;gdscript          ; the language you waited for
-       (go +lsp)           ; the hipster dialect
-       ;;(haskell +dante)  ; a language that's lazier than I am
-       ;;hy                ; readability of scheme w/ speed of python
-       ;;idris             ; a language you can depend on
-       json                ; At least it ain't XML
-       ;;(java +meghanada) ; the poster child for carpal tunnel syndrome
-       javascript          ; all(hope(abandon(ye(who(enter(here))))))
-       (julia              ; a better, faster MATLAB
-        +lsp)
-       ;;kotlin            ; a better, slicker Java(Script)
-       latex               ; writing papers in Emacs has never been so fun
-       ;;lean
-       ;;factor
-       ;;ledger            ; an accounting system in Emacs
-       ;;lua               ; one-based indices? one-based indices
-       markdown            ; writing docs for people to ignore
-       ;;nim               ; python + lisp at the speed of c
-       ;;nix               ; I hereby declare "nix geht mehr!"
-       ;;ocaml             ; an objective camel
-       (org                ; organize your plain life in plain text
-        +brain
-        +journal
-        +jupyter
-        +noter
-        +pandoc
-        +present
-        +pretty
-        )
-       ;;php               ; perl's insecure younger brother
-       ;;plantuml          ; diagrams for confusing people more
-       ;;purescript        ; javascript, but functional
-       (python             ; beautiful is better than ugly
-        +lsp
-        +pyright
-        +pyenv
-        +poetry
-        +cython)
-       ;;qt                ; the 'cutest' gui framework ever
-       ;;racket            ; a DSL for DSLs
-       ;;raku              ; the artist formerly known as perl6
-       ;;rest              ; Emacs as a REST client
-       ;;rst               ; ReST in peace
-       ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
-       ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
-       ;;scala             ; java, but good
-       ;;scheme            ; a fully conniving family of lisps
-       sh                  ; she sells {ba,z,fi}sh shells on the C xor
-       ;;sml
-       ;;solidity          ; do you need a blockchain? No.
-       ;;swift             ; who asked for emoji variables?
-       ;;terra             ; Earth and Moon in alignment for performance.
-       ;;web               ; the tubes
-       ;;yaml              ; JSON, but readable
+         :lang
+         ;;agda              ; types of types of types of types...
+         ;;cc                ; C/C++/Obj-C madness
+         ;;clojure           ; java with a lisp
+         ;;common-lisp       ; if you've seen one lisp, you've seen them all
+         ;;coq               ; proofs-as-programs
+         ;;crystal            ; ruby at the speed of c
+         ;;csharp            ; unity, .NET, and mono shenanigans
+         ;;data              ; config/data formats
+         ;;(dart +flutter)   ; paint ui and not much else
+         ;;elixir            ; erlang done right
+         ;;elm               ; care for a cup of TEA?
+         emacs-lisp          ; drown in parentheses
+         ;;erlang            ; an elegant language for a more civilized age
+         ess                ; emacs speaks statistics
+         ;; +lsp)
+         ;;faust             ; dsp, but you get to keep your soul
+         ;;fsharp            ; ML stands for Microsoft's Language
+         ;;fstar             ; (dependent) types and (monadic) effects and Z3
+         ;;gdscript          ; the language you waited for
+         go                  ; the hipster dialect
+         ;;(haskell +dante)  ; a language that's lazier than I am
+         ;;hy                ; readability of scheme w/ speed of python
+         ;;idris             ; a language you can depend on
+         json                ; At least it ain't XML
+         ;;(java +meghanada) ; the poster child for carpal tunnel syndrome
+         javascript          ; all(hope(abandon(ye(who(enter(here))))))
+         julia              ; a better, faster MATLAB
 
-       :email
-       ;;(mu4e +gmail)
-       ;;notmuch
-       ;;(wanderlust +gmail)
+         ;;kotlin            ; a better, slicker Java(Script)
+         (latex
+          +cdlatex
+          +latexmk
+          +fold)
+         ;;lean
+         ;;factor
+         ;;ledger            ; an accounting system in Emacs
+         ;;lua               ; one-based indices? one-based indices
+         markdown            ; writing docs for people to ignore
+         ;;nim               ; python + lisp at the speed of c
+         ;;nix               ; I hereby declare "nix geht mehr!"
+         ;;ocaml             ; an objective camel
+         (org                ; organize your plain life in plain text
+          +brain
+          +journal
+          +jupyter
+          +noter
+          +pandoc
+          +present
+          +pretty
+          )
+         ;;php               ; perl's insecure younger brother
+         ;;plantuml          ; diagrams for confusing people more
+         ;;purescript        ; javascript, but functional
+         (python             ; beautiful is better than ugly
+          +lsp
+          +pyright
+          +pyenv
+          +poetry
+          +cython)
+         ;;qt                ; the 'cutest' gui framework ever
+         ;;racket            ; a DSL for DSLs
+         ;;raku              ; the artist formerly known as perl6
+         ;;rest              ; Emacs as a REST client
+         ;;rst               ; ReST in peace
+         ;;(ruby +rails)     ; 1.step {|i| p "Ruby is #{i.even? ? 'love' : 'life'}"}
+         ;;rust              ; Fe2O3.unwrap().unwrap().unwrap().unwrap()
+         ;;scala             ; java, but good
+         ;;scheme            ; a fully conniving family of lisps
+         sh                  ; she sells {ba,z,fi}sh shells on the C xor
+         ;;sml
+         ;;solidity          ; do you need a blockchain? No.
+         ;;swift             ; who asked for emoji variables?
+         ;;terra             ; Earth and Moon in alignment for performance.
+         ;;web               ; the tubes
+         ;;yaml              ; JSON, but readable
 
-       :app
-       ;;calendar
-       ;;everywhere        ; *leave* Emacs!? You must be joking
-       ;;irc               ; how neckbeards socialize
-       ;;(rss +org)        ; emacs as an RSS reader
-       ;;twitter           ; twitter client https://twitter.com/vnought
+         :email
+         ;;(mu4e +gmail)
+         ;;notmuch
+         ;;(wanderlust +gmail)
 
-       :config
-       ;;literate
-       (default +bindings +smartparens))
+         :app
+         ;;calendar
+         ;;everywhere        ; *leave* Emacs!? You must be joking
+         ;;irc               ; how neckbeards socialize
+         ;;(rss +org)        ; emacs as an RSS reader
+         ;;twitter           ; twitter client https://twitter.com/vnought
+
+         :config
+         ;;literate
+         (default +bindings +smartparens))
 #+end_src
 
 * Emacs 28 Specific Stuff
@@ -429,13 +439,33 @@ I need to unpin several packages to get Emacs 28.0.5 working
 (unpin! dap-mode lsp-mode treemacs spinner)
 #+end_src
 * General configuration
-
 ** User Information
 
 My user information.
 #+begin_src emacs-lisp
 (setq user-full-name "Giuseppe Ragusa"
       user-mail-address "giuseppe.ragusa@gmail.com")
+#+end_src
+
+** Defaults
+#+begin_src emacs-lisp
+(setq-default
+ delete-by-moving-to-trash t                      ; Delete files to trash
+ tab-width 4                                                         ; Set width for tabs
+ uniquify-buffer-name-style 'forward      ; Uniquify buffer names
+ window-combination-resize t                    ; take new window space from all other windows (not just current)
+ x-stretch-cursor t)                                           ; Stretch cursor to the glyph width
+
+(setq undo-limit 80000000                          ; Raise undo-limit to 80Mb
+      evil-want-fine-undo t                             ; By default while in insert all changes are one big blob. Be more granular
+      auto-save-default t                                    ; Nobody likes to loose work, I certainly don't
+      inhibit-compacting-font-caches t      ; When there are lots of glyphs, keep them in memory
+      truncate-string-ellipsis "…")               ; Unicode ellispis are nicer than "...", and also save /precious/ space
+
+(delete-selection-mode 1)                             ; Replace selection when inserting text
+(display-time-mode 1)                                   ; Enable time in the mode-line
+(global-subword-mode 1)                           ; Iterate through CamelCase words
+(setq line-spacing 0.3)
 #+end_src
 
 ** MAC Keybindings
@@ -467,29 +497,13 @@ For some reason Doom disables auto-save and backup files by default. Let's reena
 I have used Emacs for a long time on different platforms and I am used to several keybinding that I should probably forget, but muscle memory gets me everytime.
 
 #+begin_src emacs-lisp
-(when (eq system-type 'darwin)
-  (global-set-key [(M-s-right)] 'windmove-right)
-  (global-set-key [(M-s-left)]  'windmove-left)
-  (global-set-key [(M-s-up)]    'windmove-up)
-  (global-set-key [(M-s-down)]  'windmove-down)
-  (map! :ne "s-/" #'comment-or-uncomment-region)
-  )
 
-(when (eq system-type 'gnu/linux)
-  (global-set-key [(M-s-right)] 'windmove-right)
-  (global-set-key [(M-s-left)] 'windmove-left)
-  (global-set-key [(M-s-up)] 'windmove-up)
-  (global-set-key [(M-s-down)] 'windmove-down)
-  (map! :nei "s-x" #'execute-extended-command)
-  (map! :nei "M-/" #'comment-or-uncomment-region)
-  (map! :nei "s-/" #'comment-or-uncomment-region)
-  (map! :nei "s-c" #'kill-ring-save)
-  (map! :nei "s-v" #'yank)
-  (map! :nei "s-z" #'undo-fu-only-undo)
-  (map! :nei "S-z" #'undo-fu-only-redo)
-  (map! :nei "s-s" #'save-buffer)
+(map! :leader
+      :desc "Move to window left"  "<left>"  #'evil-window-left
+      :desc "Move to window right" "<right>" #'evil-window-right
+      :desc "Move to window up"    "<up>"    #'evil-window-up
+      :desc "Move to window down"  "<down>"  #'evil-window-down
 )
-
 (global-set-key [f1] 'replace-string)
 (global-set-key [f2] 'split-window-horizontally)
 (global-set-key [f3] 'split-window-vertically)
@@ -507,11 +521,11 @@ I tend to change very often the fonts that I use. The only fix-point is =JuliaMo
 Set base and variable-pitch fonts. I currently like [[https://github.com/be5invis/Iosevka]Iosevka SS4]] and [[https://www.huertatipografica.com/en/fonts/alegreya-ht-pro][Alegreya]]. I also use a laptop (OSX) where a prefer smaller font sizes and a desktop (Linux) so a set font size conditionally.
 
 #+begin_src emacs-lisp
-(setq doom-font (font-spec :family "IosevkaSS04" :size 22)
+(setq doom-font (font-spec :family "Iosevka Term SS04" :size 22)
       doom-variable-pitch-font (font-spec :family "Overpass" :size 24)
-      doom-unicode-font (font-spec :family "JuliaMono")
+      doom-unicode-font (font-spec :family "Iosevka Term SS04")
       doom-serif-font (font-spec :family "IBM Plex Mono" :weight 'light))
-
+(setq doom-unicode-font doom-font)
 (cond (IS-MAC
        ))
 
@@ -607,9 +621,17 @@ When using =treemacs= exclude several files that are never to be opened in emacs
         "*/_region_.tex"))
 #+end_src
 
-
+*** Windows splitting
+The following code allows me to choose which buffer I want to see when I split a window. It first does a split to the right, and then opens Ivy and and shows me a preview.
+#+begin_src emacs-lisp
+(setq evil-vsplit-window-right t
+      evil-split-window-below t)
+(defadvice! prompt-for-buffer (&rest _)
+  :after '(evil-window-split evil-window-vsplit)
+  (+ivy/switch-buffer))
+(setq +ivy-buffer-preview t)
+#+end_src
 * Modules configuration
-
 ** Org-mode
 *** Additional packages
 #+begin_src emacs-lisp :tangle packages.el
@@ -688,7 +710,11 @@ When using =treemacs= exclude several files that are never to be opened in emacs
     "File formats that should be opened externally.")
 #+end_src
 
-
+**** Org-pretty
+#+begin_src emacs-lisp
+(add-hook! 'org-mode-hook
+           #'+org-pretty-mode)
+#+end_src
 **** Nicer return
 
 #+begin_src emacs-lisp
@@ -794,7 +820,7 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
   :config
   (setq org-appear-autoemphasis t
         org-appear-autosubmarkers t
-        org-appear-autolinks nil)
+        org-appear-autolinks t)
   ;; for proper first-time setup, `org-appear--set-elements'
   ;; needs to be run after other hooks have acted.
   (run-at-time nil nil #'org-appear--set-elements))
@@ -859,6 +885,7 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
     :subtitle      "#+subtitle:"
     :author        "#+author:"
     :date          "#+date:"
+    :email         "#+email:"
     :property      "#+property:"
     :options       "#+options:"
     :latex_class   "#+latex_class:"
@@ -883,7 +910,6 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
   (plist-put +ligatures-extra-symbols :name "⁍")
   (setq org-highlight-latex-and-related '(native script entities))
   (add-to-list 'org-src-block-faces '("latex" (:inherit default :extend t)))
-
 #+end_src
 
 **** Org-fragtog
@@ -921,12 +947,13 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
 #+begin_src emacs-lisp
 #+end_src
 
-**** End after! config
+*** End after! config
 #+begin_src emacs-lisp
 )
 #+end_src
 
 ** LaTeX
+
 ** vterm
 #+begin_src emacs-lisp
 (map! :after vterm
