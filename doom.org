@@ -36,6 +36,7 @@ This file is written in [[https://leanpub.com/lit-config][literate programming s
     - [[#modeline][Modeline]]
     - [[#treemacs][Treemacs]]
     - [[#windows-splitting][Windows splitting]]
+  - [[#fix][Fix]]
 - [[#modules-configuration][Modules configuration]]
   - [[#org-mode][Org-mode]]
     - [[#additional-packages][Additional packages]]
@@ -321,7 +322,7 @@ This code is written to the =init.el= to select which modules to load. Written h
          (eval +overlay)     ; run code, run (also, repls)
          ;;gist              ; interacting with github gists
          lookup              ; navigate your code and its documentation
-         ;;lsp
+         lsp
          magit               ; a git porcelain for Emacs
          ;;make              ; run make tasks from Emacs
          ;;pass              ; password manager for nerds
@@ -352,7 +353,7 @@ This code is written to the =init.el= to select which modules to load. Written h
          emacs-lisp          ; drown in parentheses
          ;;erlang            ; an elegant language for a more civilized age
          ess                ; emacs speaks statistics
-         ;; +lsp)
+         ;;+lsp)
          ;;faust             ; dsp, but you get to keep your soul
          ;;fsharp            ; ML stands for Microsoft's Language
          ;;fstar             ; (dependent) types and (monadic) effects and Z3
@@ -432,11 +433,11 @@ This code is written to the =init.el= to select which modules to load. Written h
 #+end_src
 
 * Emacs 28 Specific Stuff
-I use Emacs 28.0.5 compiled with =--native-comp= flag. Doom suppports it, but some packages are pinned to versions that do not work well with it.
+I use Emacs 28.0.5 compiled with =--native-comp= flag. Doom supports it, but some packages are pinned to versions that do not work well with it.
 ** Unpin
 I need to unpin several packages to get Emacs 28.0.5 working
 #+begin_src emacs-lisp :tangle packages.el
-(unpin! dap-mode lsp-mode treemacs spinner)
+(unpin! dap-mode lsp-mode treemacs spinner org-protocol)
 #+end_src
 * General configuration
 ** User Information
@@ -630,6 +631,15 @@ The following code allows me to choose which buffer I want to see when I split a
   :after '(evil-window-split evil-window-vsplit)
   (+ivy/switch-buffer))
 (setq +ivy-buffer-preview t)
+#+end_src
+** Fix
+There is a problem with xterm and Emacs 28. See [[https://github.com/hlissner/doom-emacs/issues/4977][https://github.com/hlissner/doom-emacs/issues/4977]].
+#+begin_src emacs-lisp
+;; add to ~/.doom.d/config.el
+(setq xterm-set-window-title t)
+(defadvice! fix-xterm-set-window-title (&optional terminal)
+  :before-while #'xterm-set-window-title
+  (not (display-graphic-p terminal)))
 #+end_src
 * Modules configuration
 ** Org-mode
@@ -835,7 +845,6 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
 #+end_src
 
 **** Ligatures
-
 #+begin_src emacs-lisp
   (appendq! +ligatures-extra-symbols
             `(:checkbox      "☐"
@@ -911,13 +920,10 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
   (setq org-highlight-latex-and-related '(native script entities))
   (add-to-list 'org-src-block-faces '("latex" (:inherit default :extend t)))
 #+end_src
-
 **** Org-fragtog
-
 #+begin_src emacs-lisp
  (use-package! org-fragtog
     :hook (org-mode . org-fragtog-mode))
-
   (setq org-format-latex-header "\\documentclass{article}
   \\usepackage[usenames]{xcolor}
   \\usepackage[T1]{fontenc}
@@ -939,12 +945,12 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
   ")
   (setq org-format-latex-options
         (plist-put org-format-latex-options :background "Transparent"))
-
 #+end_src
 
 **** Org-latex
 
 #+begin_src emacs-lisp
+
 #+end_src
 
 *** End after! config
@@ -1005,6 +1011,6 @@ completion go at the beginning of the insertion. This function fix it.
   )
 
 ;; Make sure that the file is present
-(setq julia-repl-switches "--sysimage /Users/gragusa/.julia/.ds/ds")
-(setq inferior-julia-args "--sysimage /Users/gragusa/.julia/.ds/ds")
+(setq julia-repl-switches "--sysimage ~/.julia/.ds/ds")
+(setq inferior-julia-args "--sysimage ~/.julia/.ds/ds")
 #+end_src
