@@ -43,8 +43,10 @@ This file is written in [[https://leanpub.com/lit-config][literate programming s
     - [[#org-config][org-config]]
     - [[#end-after-config][End after! config]]
   - [[#latex][LaTeX]]
+  - [[#ess][ESS]]
   - [[#vterm][vterm]]
   - [[#julia-mode][Julia Mode]]
+  - [[#jupyter][Jupyter]]
 
 * References
 
@@ -437,7 +439,7 @@ I use Emacs 28.0.5 compiled with =--native-comp= flag. Doom supports it, but som
 ** Unpin
 I need to unpin several packages to get Emacs 28.0.5 working
 #+begin_src emacs-lisp :tangle packages.el
-(unpin! dap-mode lsp-mode treemacs spinner org-protocol)
+(unpin! dap-mode lsp-mode treemacs spinner)
 #+end_src
 * General configuration
 ** User Information
@@ -511,6 +513,7 @@ I have used Emacs for a long time on different platforms and I am used to severa
 (global-set-key [f4] 'delete-window)
 (global-set-key [home] 'beginning-of-line)
 (global-set-key [end] 'end-of-line)
+(global-set-key [C-x C-s] 'evil-save)
 #+end_src
 
 ** Visual, session and window settings
@@ -949,9 +952,20 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
 
 **** Org-latex
 
-#+begin_src emacs-lisp
+Use minted for listings and include =minted= latex package in the default package
+list. Also change the compilation switches to accommodate for minted.
 
+#+begin_src emacs-lisp
+;; Use minted for listings
+(setq org-latex-listings 'minted
+      org-latex-packages-alist '(("" "minted"))
+      org-latex-pdf-process
+      '("xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"
+        "xelatex -shell-escape -interaction nonstopmode -output-directory %o %f"))
 #+end_src
+
+
+
 
 *** End after! config
 #+begin_src emacs-lisp
@@ -959,6 +973,15 @@ Org mode provides a way to toggle visibility of emphasis markers, links, subscri
 #+end_src
 
 ** LaTeX
+** ESS
+
+It is annoying for being asked for a starting directory for =R=.
+
+#+begin_src emacs-lisp
+(after! ess
+  (setq ess-ask-for-ess-directory nil)
+)
+#+end_src
 
 ** vterm
 #+begin_src emacs-lisp
@@ -1013,4 +1036,23 @@ completion go at the beginning of the insertion. This function fix it.
 ;; Make sure that the file is present
 (setq julia-repl-switches "--sysimage ~/.julia/.ds/ds")
 (setq inferior-julia-args "--sysimage ~/.julia/.ds/ds")
+#+end_src
+
+** Jupyter
+
+I hate writing in Jupyter, but it useful for teaching. I want to use org to write, and then export to notebook. I can do this by using =ob-ipythn=
+#+begin_src emacs-lisp :tangle packages.el
+ (package! ox-ipynb
+  :recipe (:host github
+           :repo "jkitchin/ox-ipynb"
+           :branch "master")
+)
+#+end_src
+
+The add the required package.
+
+#+begin_src emacs-lisp
+(after! org
+  (require 'ox-ipynb)
+)
 #+end_src
